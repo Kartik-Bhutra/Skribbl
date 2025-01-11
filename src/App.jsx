@@ -1,7 +1,12 @@
 import Canvas from "./components/Canvas";
+import ChatBox from "./components/ChatBox";
+import "./App.css";
 
-function App() {
-  const app = import.meta.env.VITE_IP_ADDRESS;
-  return <Canvas />;
+export default function () {
+  return (
+    <div className="game">
+      <Canvas />
+      <ChatBox />
+    </div>
+  );
 }
-export default App;
