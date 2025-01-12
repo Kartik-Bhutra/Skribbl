@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Options from "./Options";
 
 export default function Canvas() {
   const canvasRef = useRef(null);
@@ -7,14 +8,20 @@ export default function Canvas() {
   const coordinates = useRef([]);
   const width = useRef(0);
   const height = useRef(0);
+  const [clear, setClear] = useState(false);
+  const [undo, setUndo] = useState(false);
+  const [erase, setErase] = useState(false);
 
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
-    const container = canvas.parentElement;
-    canvas.width = container.offsetWidth;
-    canvas.height = container.offsetHeight;
-    width.current = canvas.width;
-    height.current = canvas.height;
+    let { width: canvasWidth, height: canvasHeight } =
+      window.getComputedStyle(canvas);
+    canvasWidth = parseFloat(canvasWidth);
+    canvasHeight = parseFloat(canvasHeight);
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    width.current = canvasWidth;
+    height.current = canvasHeight;
     redraw();
   };
 
@@ -58,27 +65,48 @@ export default function Canvas() {
     };
   }, []);
 
+  useEffect(() => {
+    if (clear) {
+      const ctx = ctxRef.current;
+      ctx.clearRect(0, 0, width.current, height.current);
+      coordinates.current = [];
+      setClear(false);
+    }
+    if (undo) {
+      coordinates.current.pop();
+      redraw();
+      setUndo(false);
+    }
+  }, [clear, undo]);
+
   const startDrawing = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
     isDrawing.current = true;
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(offsetX, offsetY);
-    coordinates.current.push([
-      [offsetX / width.current, offsetY / height.current],
-    ]);
+    if (!erase) {
+      coordinates.current.push([
+        [offsetX / width.current, offsetY / height.current],
+      ]);
+    }
   };
 
   const draw = (e) => {
     if (!isDrawing.current) return;
     const { offsetX, offsetY } = e.nativeEvent;
     const ctx = ctxRef.current;
-    ctx.lineTo(offsetX, offsetY);
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.stroke();
-    const lastPath = coordinates.current[coordinates.current.length - 1];
-    lastPath.push([offsetX / width.current, offsetY / height.current]);
+
+    if (erase) {
+      ctx.clearRect(offsetX - 5, offsetY - 5, 10, 10);
+    } else {
+      ctx.lineTo(offsetX, offsetY);
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      const lastPath = coordinates.current[coordinates.current.length - 1];
+      lastPath.push([offsetX / width.current, offsetY / height.current]);
+    }
   };
 
   const stopDrawing = () => {
@@ -88,6 +116,7 @@ export default function Canvas() {
   };
 
   const createPoint = (e) => {
+    if (erase) return;
     const { offsetX, offsetY } = e.nativeEvent;
     ctxRef.current.fillStyle = "red";
     ctxRef.current.fillRect(offsetX - 1.25, offsetY - 1.25, 2.25, 2.25);
@@ -97,17 +126,19 @@ export default function Canvas() {
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="canvas"
-      onPointerDown={(e) => {
-        startDrawing(e);
-        createPoint(e);
-      }}
-      onPointerMove={draw}
-      onPointerUp={stopDrawing}
-      onPointerCancel={stopDrawing}
-      onPointerLeave={stopDrawing}
-    ></canvas>
+    <>
+      <canvas
+        ref={canvasRef}
+        onPointerDown={(e) => {
+          startDrawing(e);
+          createPoint(e);
+        }}
+        onPointerMove={draw}
+        onPointerUp={stopDrawing}
+        onPointerCancel={stopDrawing}
+        onPointerLeave={stopDrawing}
+      ></canvas>
+      <Options setClear={setClear} setUndo={setUndo} setErase={setErase} />
+    </>
   );
 }

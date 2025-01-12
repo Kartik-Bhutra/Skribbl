@@ -14,7 +14,6 @@ export default function () {
                 <div>{player.name}</div>
                 <div>{player.score}</div>
               </div>
-              <div>{player.avatar}</div>
             </div>
           );
         })}

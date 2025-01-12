@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { messages as dummy } from "../assets/dummyMessages";
 
-export default function ChatBox() {
+export default function () {
   const [messages, setMessages] = useState(dummy);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
@@ -27,7 +27,7 @@ export default function ChatBox() {
 
   return (
     <>
-      <div ref={chatsRef}>
+      <div ref={chatsRef} className="chats">
         {messages.map((message, idx) => (
           <div key={idx}>
             <strong>{message.name}</strong> : {message.text}
