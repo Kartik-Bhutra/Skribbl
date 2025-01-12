@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { messages as dummyMessages } from "../../public/dummyMessages";
-import "../styles/chatbox.css";
+import { messages as dummy } from "../assets/dummyMessages";
 
 export default function ChatBox() {
-  const [messages, setMessages] = useState(dummyMessages);
+  const [messages, setMessages] = useState(dummy);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
 
@@ -14,7 +13,7 @@ export default function ChatBox() {
       setMessages((prevState) => [
         ...prevState,
         {
-          user: "You",
+          name: "You",
           text: message,
         },
       ]);
@@ -27,25 +26,24 @@ export default function ChatBox() {
   }, [messages]);
 
   return (
-    <div className="chat-container">
-      <div className="chats" ref={chatsRef}>
+    <>
+      <div ref={chatsRef}>
         {messages.map((message, idx) => (
-          <div className="message" key={idx}>
-            <strong>{message.user}</strong> : {message.text}
+          <div key={idx}>
+            <strong>{message.name}</strong> : {message.text}
           </div>
         ))}
       </div>
-      <form className="input-container">
+      <form>
         <input
           type="text"
-          className="enter-text"
           placeholder="Type your message..."
           ref={messageRef}
         />
-        <button className="send-button" onClick={sendMessage} type="submit">
+        <button onClick={sendMessage} type="submit">
           Send
         </button>
       </form>
-    </div>
+    </>
   );
 }

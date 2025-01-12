@@ -1,62 +1,113 @@
 import { useEffect, useRef } from "react";
-import "../styles/canvas.css";
-export default function () {
 
+export default function Canvas() {
   const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
   const isDrawing = useRef(false);
-  const lastPos = useRef({ x: 0, y: 0 });
+  const coordinates = useRef([]);
+  const width = useRef(0);
+  const height = useRef(0);
+
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current;
+    const container = canvas.parentElement;
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+    width.current = canvas.width;
+    height.current = canvas.height;
+    redraw();
+  };
+
+  const redraw = () => {
+    const ctx = ctxRef.current;
+    ctx.clearRect(0, 0, width.current, height.current);
+    for (const path of coordinates.current) {
+      if (path.length === 1) {
+        const [x, y] = path[0];
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+          x * width.current - 1.25,
+          y * height.current - 1.25,
+          2.25,
+          2.25
+        );
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
+        for (let i = 1; i < path.length; i++) {
+          const [x, y] = path[i];
+          ctx.lineTo(x * width.current, y * height.current);
+        }
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    canvas.ctx = ctx;
+    ctxRef.current = ctx;
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
   }, []);
 
   const startDrawing = (e) => {
+    const { offsetX, offsetY } = e.nativeEvent;
     isDrawing.current = true;
-    const { offsetX: x, offsetY: y } = e.nativeEvent;
-    lastPos.current = { x, y };
-  };
-
-  const stopDrawing = () => {
-    isDrawing.current = false;
+    ctxRef.current.beginPath();
+    ctxRef.current.moveTo(offsetX, offsetY);
+    coordinates.current.push([
+      [offsetX / width.current, offsetY / height.current],
+    ]);
   };
 
   const draw = (e) => {
     if (!isDrawing.current) return;
-    const { offsetX: x, offsetY: y } = e.nativeEvent;
-    const canvas = canvasRef.current;
-    const ctx = canvas.ctx;
-    ctx.beginPath();
-    ctx.moveTo(lastPos.current.x, lastPos.current.y);
-    ctx.lineTo(x, y);
+    const { offsetX, offsetY } = e.nativeEvent;
+    const ctx = ctxRef.current;
+    ctx.lineTo(offsetX, offsetY);
     ctx.strokeStyle = "red";
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
     ctx.stroke();
-    lastPos.current = { x, y };
+    const lastPath = coordinates.current[coordinates.current.length - 1];
+    lastPath.push([offsetX / width.current, offsetY / height.current]);
+  };
+
+  const stopDrawing = () => {
+    if (!isDrawing.current) return;
+    isDrawing.current = false;
+    ctxRef.current.closePath();
   };
 
   const createPoint = (e) => {
-    const { offsetX: X, offsetY: Y } = e.nativeEvent;
-    const canvas = canvasRef.current;
-    const ctx = canvas.ctx;
-    ctx.fillStyle = "red";
-    ctx.fillRect(X - 1.25, Y - 1.25, 2.25, 2.25);
+    const { offsetX, offsetY } = e.nativeEvent;
+    ctxRef.current.fillStyle = "red";
+    ctxRef.current.fillRect(offsetX - 1.25, offsetY - 1.25, 2.25, 2.25);
+    coordinates.current.push([
+      [offsetX / width.current, offsetY / height.current],
+    ]);
   };
-  
+
   return (
-    <div className="canvas-container">
-      <canvas
-        ref={canvasRef}
-        onPointerDown={startDrawing}
-        onPointerMove={draw}
-        onPointerUp={stopDrawing}
-        onPointerLeave={stopDrawing}
-        onClick={createPoint}
-      ></canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="canvas"
+      onPointerDown={(e) => {
+        startDrawing(e);
+        createPoint(e);
+      }}
+      onPointerMove={draw}
+      onPointerUp={stopDrawing}
+      onPointerCancel={stopDrawing}
+      onPointerLeave={stopDrawing}
+    ></canvas>
   );
 }
