@@ -11,6 +11,8 @@ export default function Canvas() {
   const [clear, setClear] = useState(false);
   const [undo, setUndo] = useState(false);
   const [erase, setErase] = useState(false);
+  const [fill, setFill] = useState(false);
+  const [color, setColor] = useState("#000000")
 
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
@@ -29,28 +31,17 @@ export default function Canvas() {
     const ctx = ctxRef.current;
     ctx.clearRect(0, 0, width.current, height.current);
     for (const path of coordinates.current) {
-      if (path.length === 1) {
-        const [x, y] = path[0];
-        ctx.fillStyle = "red";
-        ctx.fillRect(
-          x * width.current - 1.25,
-          y * height.current - 1.25,
-          2.25,
-          2.25
-        );
-      } else {
-        ctx.beginPath();
-        ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
-        for (let i = 1; i < path.length; i++) {
-          const [x, y] = path[i];
-          ctx.lineTo(x * width.current, y * height.current);
-        }
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.stroke();
-        ctx.closePath();
+      ctx.beginPath();
+      ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
+      for (let i = 1; i < path.length; i++) {
+        const [x, y] = path[i];
+        ctx.lineTo(x * width.current, y * height.current);
       }
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.closePath();
     }
   };
 
@@ -79,8 +70,20 @@ export default function Canvas() {
     }
   }, [clear, undo]);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const handleContextMenu = (e) => e.preventDefault();
+    canvas.addEventListener("contextmenu", handleContextMenu);
+    return () => canvas.removeEventListener("contextmenu", handleContextMenu);
+  }, []);
+
   const startDrawing = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
+    if (fill) {
+      setFill(false);
+      fillColor(Math.floor(offsetX), Math.floor(offsetY), color);
+      return;
+    }
     isDrawing.current = true;
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(offsetX, offsetY);
@@ -115,30 +118,81 @@ export default function Canvas() {
     ctxRef.current.closePath();
   };
 
-  const createPoint = (e) => {
-    if (erase) return;
-    const { offsetX, offsetY } = e.nativeEvent;
-    ctxRef.current.fillStyle = "red";
-    ctxRef.current.fillRect(offsetX - 1.25, offsetY - 1.25, 2.25, 2.25);
-    coordinates.current.push([
-      [offsetX / width.current, offsetY / height.current],
-    ]);
+  const fillColor = (startX, startY, fillColor) => {
+    const ctx = ctxRef.current;
+    const canvas = canvasRef.current;
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    const startIndex = (startY * canvas.width + startX) * 4;
+    const startColor = {
+      r: data[startIndex],
+      g: data[startIndex + 1],
+      b: data[startIndex + 2],
+      a: data[startIndex + 3],
+    };
+
+    const targetColor = {
+      r: parseInt(fillColor.slice(1, 3), 16),
+      g: parseInt(fillColor.slice(3, 5), 16),
+      b: parseInt(fillColor.slice(5, 7), 16),
+      a: 255,
+    };
+
+    if (
+      startColor.r === targetColor.r &&
+      startColor.g === targetColor.g &&
+      startColor.b === targetColor.b &&
+      startColor.a === targetColor.a
+    ) {
+      return;
+    }
+
+    const stack = [[startX, startY]];
+
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+      const index = (y * canvas.width + x) * 4;
+
+      if (
+        data[index] === startColor.r &&
+        data[index + 1] === startColor.g &&
+        data[index + 2] === startColor.b &&
+        data[index + 3] === startColor.a
+      ) {
+        data[index] = targetColor.r;
+        data[index + 1] = targetColor.g;
+        data[index + 2] = targetColor.b;
+        data[index + 3] = targetColor.a;
+
+        if (x > 0) stack.push([x - 1, y]);
+        if (x < canvas.width - 1) stack.push([x + 1, y]);
+        if (y > 0) stack.push([x, y - 1]);
+        if (y < canvas.height - 1) stack.push([x, y + 1]);
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
   };
 
   return (
     <>
       <canvas
         ref={canvasRef}
-        onPointerDown={(e) => {
-          startDrawing(e);
-          createPoint(e);
-        }}
+        onPointerDown={startDrawing}
         onPointerMove={draw}
         onPointerUp={stopDrawing}
         onPointerCancel={stopDrawing}
         onPointerLeave={stopDrawing}
       ></canvas>
-      <Options setClear={setClear} setUndo={setUndo} setErase={setErase} />
+      <Options
+        setClear={setClear}
+        setUndo={setUndo}
+        setErase={setErase}
+        setFill={setFill}
+        setColor={setColor}
+      />
     </>
   );
 }
