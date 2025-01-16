@@ -29,12 +29,12 @@ export default function () {
     <>
       <div ref={chatsRef} className="chats">
         {messages.map((message, idx) => (
-          <div key={idx}>
-            <strong>{message.name}</strong> : {message.text}
+          <div key={idx} className="message">
+            <strong>{message.name}</strong> : <div>{message.text}</div>
           </div>
         ))}
       </div>
-      <form>
+      <form className="text">
         <input
           type="text"
           placeholder="Type your message..."

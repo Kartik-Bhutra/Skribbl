@@ -38,7 +38,7 @@ export default function Canvas() {
         ctx.lineTo(x * width.current, y * height.current);
       }
       ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 8;
       ctx.lineCap = "round";
       ctx.stroke();
       ctx.closePath();
@@ -70,13 +70,6 @@ export default function Canvas() {
     }
   }, [clear, undo]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const handleContextMenu = (e) => e.preventDefault();
-    canvas.addEventListener("contextmenu", handleContextMenu);
-    return () => canvas.removeEventListener("contextmenu", handleContextMenu);
-  }, []);
-
   const startDrawing = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
     if (fill) {
@@ -104,7 +97,7 @@ export default function Canvas() {
     } else {
       ctx.lineTo(offsetX, offsetY);
       ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 8;
       ctx.lineCap = "round";
       ctx.stroke();
       const lastPath = coordinates.current[coordinates.current.length - 1];
@@ -121,10 +114,8 @@ export default function Canvas() {
   const fillColor = (startX, startY, fillColor) => {
     const ctx = ctxRef.current;
     const canvas = canvasRef.current;
-
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-
     const startIndex = (startY * canvas.width + startX) * 4;
     const startColor = {
       r: data[startIndex],
@@ -132,14 +123,12 @@ export default function Canvas() {
       b: data[startIndex + 2],
       a: data[startIndex + 3],
     };
-
     const targetColor = {
       r: parseInt(fillColor.slice(1, 3), 16),
       g: parseInt(fillColor.slice(3, 5), 16),
       b: parseInt(fillColor.slice(5, 7), 16),
       a: 255,
     };
-
     if (
       startColor.r === targetColor.r &&
       startColor.g === targetColor.g &&
@@ -148,9 +137,7 @@ export default function Canvas() {
     ) {
       return;
     }
-
     const stack = [[startX, startY]];
-
     while (stack.length > 0) {
       const [x, y] = stack.pop();
       const index = (y * canvas.width + x) * 4;
@@ -172,7 +159,6 @@ export default function Canvas() {
         if (y < canvas.height - 1) stack.push([x, y + 1]);
       }
     }
-
     ctx.putImageData(imageData, 0, 0);
   };
 
