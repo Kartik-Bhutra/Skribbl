@@ -1,7 +1,8 @@
 import Canvas from "./components/Canvas";
 import ChatBox from "./components/ChatBox";
-import Navbar from "./components/Navbar";
+import Panel from "./components/Panel";
 import Players from "./components/Players";
+import Word from "./context/ProvideWord";
 import "./index.css";
 
 export default function () {
@@ -9,13 +10,16 @@ export default function () {
     <>
       {/* <Navbar></Navbar> */}
       <div className="game">
-        <Players></Players>
+        <Players />
         <div className="board">
-          <Canvas></Canvas>
+          <Canvas />
         </div>
-        <div className="chatbox">
-          <ChatBox></ChatBox>
-        </div>
+        <Word>
+          <Panel />
+          <div className="chatbox">
+            <ChatBox />
+          </div>
+        </Word>
       </div>
     </>
   );
