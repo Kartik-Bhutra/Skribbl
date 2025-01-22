@@ -9,13 +9,15 @@ export default function () {
   return (
     <>
       {/* <Navbar></Navbar> */}
+      <Word>
+        <Panel />
+      </Word>
       <div className="game">
         <Players />
         <div className="board">
           <Canvas />
         </div>
         <Word>
-          <Panel />
           <div className="chatbox">
             <ChatBox />
           </div>
