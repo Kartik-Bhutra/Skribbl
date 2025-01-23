@@ -1,4 +1,4 @@
-import { words as dummy } from "../assets/dummyWord";
+import { words as dummy } from "../assets/dummyWords";
 
 const decryptWord = (data) => {
     let word = "";

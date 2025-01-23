@@ -11,18 +11,16 @@ export default function () {
       {/* <Navbar></Navbar> */}
       <Word>
         <Panel />
-      </Word>
-      <div className="game">
-        <Players />
-        <div className="board">
-          <Canvas />
-        </div>
-        <Word>
+        <div className="game">
+          <Players />
+          <div className="board">
+            <Canvas />
+          </div>
           <div className="chatbox">
             <ChatBox />
           </div>
-        </Word>
-      </div>
+        </div>
+      </Word>
     </>
   );
 }

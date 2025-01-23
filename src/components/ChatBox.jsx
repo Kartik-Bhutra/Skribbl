@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { messages as dummy } from "../assets/dummyMessages";
+import { useContext } from "react";
+import { wordContext } from "../context/ProvideWord";
 
 export default function () {
   const [messages, setMessages] = useState(dummy);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
+  const word = useContext(wordContext);
 
   const sendMessage = (e) => {
     e.preventDefault();
