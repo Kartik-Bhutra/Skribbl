@@ -12,7 +12,7 @@ export default function Canvas() {
   const [undo, setUndo] = useState(false);
   const [erase, setErase] = useState(false);
   const [fill, setFill] = useState(false);
-  const [color, setColor] = useState("#000000")
+  const [color, setColor] = useState("#000000");
 
   const resizeCanvas = () => {
     const canvas = canvasRef.current;

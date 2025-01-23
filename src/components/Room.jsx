@@ -1,21 +1,24 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import socketIO from "socket.io-client";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import { socket } from "../socket";
 import useName from "../hooks/useName";
 
 export default function () {
   const [name, setName] = useState("");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const socket = socketIO.connect(backendUrl, {
-    autoConnect: false,
-  });
-  useEffect(() => {
-    socket.connect();
-  });
+  const navigate = useNavigate();
 
-  const handlePlay = () => {
-    const username = name.trim() || useName();
-    console.log(username);
+  const handlePlay = (e) => {
+    e.preventDefault();
+    socket.connect();
+    socket.on("connect", () => {
+      const username = name.trim() || useName();
+      socket.emit("join", username, () => console.log("joined", username));
+      socket.on("joined", (roomID) => {
+        console.log("joined", roomID);
+        navigate(`/game/${roomID}`);
+        return;
+      });
+    });
   };
 
   return (
@@ -60,8 +63,7 @@ export default function () {
           }}
           placeholder="Enter your name"
         />
-        <Link
-          to="/game"
+        <div
           style={{
             textDecoration: "none",
             color: "white",
@@ -75,9 +77,8 @@ export default function () {
           onClick={handlePlay}
         >
           Play!
-        </Link>
-        <Link
-          to="/game"
+        </div>
+        <div
           style={{
             textDecoration: "none",
             color: "white",
@@ -91,7 +92,7 @@ export default function () {
           onClick={handlePlay}
         >
           Create Private Room
-        </Link>
+        </div>
       </div>
     </div>
   );
