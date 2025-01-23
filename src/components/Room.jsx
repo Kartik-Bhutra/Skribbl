@@ -1,24 +1,22 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { socket } from "../socket";
 import useName from "../hooks/useName";
 
 export default function () {
   const [name, setName] = useState("");
   const navigate = useNavigate();
-
   const handlePlay = (e) => {
     e.preventDefault();
     socket.connect();
     socket.on("connect", () => {
       const username = name.trim() || useName();
-      socket.emit("join", username, () => console.log("joined", username));
-      socket.on("joined", (roomID) => {
-        console.log("joined", roomID);
-        navigate(`/game/${roomID}`);
-        return;
-      });
+      socket.emit("join", username, () =>
+        localStorage.setItem("username", username)
+      );
+      socket.on("joined", (roomID) => navigate(`/${roomID}`));
     });
+    socket.on("connect_error", () => alert("connection error"));
   };
 
   return (
