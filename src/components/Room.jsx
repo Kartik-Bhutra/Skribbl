@@ -11,10 +11,12 @@ export default function () {
     socket.connect();
     socket.on("connect", () => {
       const username = name.trim() || useName();
-      socket.emit("join", username, () =>
-        localStorage.setItem("username", username)
-      );
-      socket.on("joined", (roomID) => navigate(`/${roomID}`));
+      socket.emit("join", username);
+      socket.on("joined", (roomID) => {
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("roomID", roomID);
+        navigate(`/${roomID}`);
+      });
     });
     socket.on("connect_error", () => alert("connection error"));
   };
