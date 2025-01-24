@@ -6,8 +6,8 @@ import Room from "./components/Room.jsx";
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Room />} />
-      <Route path="/:game" element={<App />} />
+      {/* <Route path="/" element={<Room />} /> */}
+      <Route path="/" element={<App />} />
     </Routes>
   </BrowserRouter>
 );

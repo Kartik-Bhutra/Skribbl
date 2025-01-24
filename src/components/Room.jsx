@@ -1,24 +1,21 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { socket } from "../socket";
 import useName from "../hooks/useName";
 
-export default function () {
+export default function ({ isConnected }) {
   const [name, setName] = useState("");
-  const navigate = useNavigate();
   const handlePlay = (e) => {
-    e.preventDefault();
     socket.connect();
     socket.on("connect", () => {
       const username = name.trim() || useName();
       socket.emit("join", username);
-      socket.on("joined", (roomID) => {
-        sessionStorage.setItem("username", username);
-        sessionStorage.setItem("roomID", roomID);
-        navigate(`/${roomID}`);
-      });
+      socket.on("joined", (roomID) => isConnected(true));
     });
-    socket.on("connect_error", () => alert("connection error"));
+    socket.on("connect_error", () => {
+      socket.disconnect();
+      alert("connection error");
+    });
   };
 
   return (
@@ -28,72 +25,112 @@ export default function () {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        height: "80vh",
-        gap: "10px",
+        height: "100vh",
+        gap: "20px",
+        padding: "20px",
+        boxSizing: "border-box",
+        textAlign: "center",
+        color: "#333",
+        fontFamily: "'Roboto', sans-serif",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
       }}
     >
       <Link to="/">
         <img
           src="/logo.gif"
-          alt=""
+          alt="Logo"
           style={{
-            maxWidth: "350px",
+            maxWidth: "100%",
+            width: "250px",
+            height: "auto",
+            marginBottom: "20px",
+            borderRadius: "10px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
           }}
         />
       </Link>
-      <div
+      <input
+        type="text"
+        placeholder="Enter your name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "350px",
-          gap: "10px",
+          padding: "12px 15px",
+          fontSize: "16px",
+          borderRadius: "8px",
+          border: "2px solid #ffffff",
+          width: "100%",
+          maxWidth: "400px",
+          boxSizing: "border-box",
+          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          color: "#333",
+          outline: "none",
+          transition: "box-shadow 0.3s ease",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        }}
+        onFocus={(e) =>
+          (e.target.style.boxShadow = "0 0 10px rgba(255, 255, 255, 0.8)")
+        }
+        onBlur={(e) =>
+          (e.target.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)")
+        }
+      />
+      <button
+        onClick={handlePlay}
+        style={{
+          padding: "12px 20px",
+          fontSize: "16px",
+          borderRadius: "8px",
+          border: "none",
+          backgroundColor: "rgba(0, 123, 255, 0.8)",
+          color: "#fff",
+          cursor: "pointer",
+          width: "100%",
+          maxWidth: "250px",
+          boxSizing: "border-box",
+          transition: "background-color 0.3s ease, transform 0.2s ease",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
+        }}
+        onMouseOver={(e) => {
+          e.target.style.backgroundColor = "rgba(0, 123, 255, 1)";
+          e.target.style.transform = "scale(1.05)";
+        }}
+        onMouseOut={(e) => {
+          e.target.style.backgroundColor = "rgba(0, 123, 255, 0.8)";
+          e.target.style.transform = "scale(1)";
         }}
       >
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{
-            width: "250px",
-            height: "20px",
-            padding: "5px",
-            fontSize: "1.2em",
-          }}
-          placeholder="Enter your name"
-        />
-        <div
-          style={{
-            textDecoration: "none",
-            color: "white",
-            width: "250px",
-            height: "20px",
-            textAlign: "center",
-            backgroundColor: "blue",
-            padding: "5px",
-            fontSize: "1.2em",
-          }}
-          onClick={handlePlay}
-        >
-          Play!
-        </div>
-        <div
-          style={{
-            textDecoration: "none",
-            color: "white",
-            width: "250px",
-            height: "20px",
-            textAlign: "center",
-            backgroundColor: "blue",
-            padding: "5px",
-            fontSize: "1.2em",
-          }}
-          onClick={handlePlay}
-        >
-          Create Private Room
-        </div>
-      </div>
+        Play
+      </button>
+      <button
+        onClick={handlePlay}
+        style={{
+          padding: "12px 20px",
+          fontSize: "16px",
+          borderRadius: "8px",
+          border: "none",
+          backgroundColor: "rgba(40, 167, 69, 0.8)",
+          color: "#fff",
+          cursor: "pointer",
+          width: "100%",
+          maxWidth: "250px",
+          boxSizing: "border-box",
+          transition: "background-color 0.3s ease, transform 0.2s ease",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
+        }}
+        onMouseOver={(e) => {
+          e.target.style.backgroundColor = "rgba(40, 167, 69, 1)";
+          e.target.style.transform = "scale(1.05)";
+        }}
+        onMouseOut={(e) => {
+          e.target.style.backgroundColor = "rgba(40, 167, 69, 0.8)";
+          e.target.style.transform = "scale(1)";
+        }}
+      >
+        Create Private Room
+      </button>
     </div>
   );
 }
