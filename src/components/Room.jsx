@@ -3,16 +3,17 @@ import { Link } from "react-router";
 import { socket } from "../socket";
 import useName from "../hooks/useName";
 
-export default function ({ setPlayers }) {
-  const [name, setName] = useState("");
+export default function ({ setPlayers, name, roomID }) {
+  const [username, setName] = useState("");
   const handlePlay = (e) => {
     socket.connect();
     socket.on("connect", () => {
-      const username = name.trim() || useName();
-      socket.emit("join", username);
-      socket.on("joined", (players) => {
-        setPlayers(players);
-        sessionStorage.setItem("username", username);
+      const playerName = username.trim() || useName();
+      socket.emit("join", playerName);
+      socket.on("joined", (room) => {
+        socket.on("players", (players) => setPlayers(players));
+        name.current = playerName;
+        roomID.current = room;
       });
     });
     socket.on("connect_error", () => {
@@ -57,7 +58,7 @@ export default function ({ setPlayers }) {
       <input
         type="text"
         placeholder="Enter your name"
-        value={name}
+        value={username}
         onChange={(e) => setName(e.target.value)}
         style={{
           padding: "12px 15px",

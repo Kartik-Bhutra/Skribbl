@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { wordContext } from "../context/ProvideWord";
 import { socket } from "../socket";
 
-export default function () {
+export default function ({ name, roomID }) {
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
@@ -11,17 +11,19 @@ export default function () {
 
   useEffect(() => {
     socket.on("recive_message", (message) => {
-      console.log(message);
       setMessages((prevState) => [...prevState, message]);
     });
   }, []);
 
   const sendMessage = (e) => {
     e.preventDefault();
-    const message = messageRef.current.value.trim();
-    const name = sessionStorage.getItem("username");
-    if (message) {
-      socket.emit("send_message", { name, text: message });
+    const text = messageRef.current.value.trim();
+    if (text) {
+      socket.emit("send_message", {
+        name: name.current,
+        roomID: roomID.current,
+        text,
+      });
       messageRef.current.value = "";
     }
   };
