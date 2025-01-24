@@ -5,18 +5,17 @@ import Panel from "./components/Panel";
 import Players from "./components/Players";
 import Word from "./context/ProvideWord";
 import Room from "./components/Room";
-import { socket } from "./socket";
 import "./index.css";
 
 export default function () {
-  const [connected, isConnected] = useState(false);
+  const [players, setPlayers] = useState([]);
   return (
     <>
-      {connected ? (
+      {players.length ? (
         <Word>
           <Panel />
           <div className="game">
-            <Players />
+            <Players players={players} />
             <div className="board">
               <Canvas />
             </div>
@@ -26,7 +25,7 @@ export default function () {
           </div>
         </Word>
       ) : (
-        <Room isConnected={isConnected} />
+        <Room setPlayers={setPlayers} />
       )}
     </>
   );

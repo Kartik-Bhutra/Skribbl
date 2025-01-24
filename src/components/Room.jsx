@@ -3,14 +3,17 @@ import { Link } from "react-router";
 import { socket } from "../socket";
 import useName from "../hooks/useName";
 
-export default function ({ isConnected }) {
+export default function ({ setPlayers }) {
   const [name, setName] = useState("");
   const handlePlay = (e) => {
     socket.connect();
     socket.on("connect", () => {
       const username = name.trim() || useName();
       socket.emit("join", username);
-      socket.on("joined", (roomID) => isConnected(true));
+      socket.on("joined", (players) => {
+        setPlayers(players);
+        sessionStorage.setItem("username", username);
+      });
     });
     socket.on("connect_error", () => {
       socket.disconnect();

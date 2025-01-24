@@ -1,25 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import { messages as dummy } from "../assets/dummyMessages";
 import { useContext } from "react";
 import { wordContext } from "../context/ProvideWord";
+import { socket } from "../socket";
 
 export default function () {
-  const [messages, setMessages] = useState(dummy);
+  const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
   const word = useContext(wordContext);
 
+  useEffect(() => {
+    socket.on("recive_message", (message) => {
+      console.log(message);
+      setMessages((prevState) => [...prevState, message]);
+    });
+  }, []);
+
   const sendMessage = (e) => {
     e.preventDefault();
     const message = messageRef.current.value.trim();
+    const name = sessionStorage.getItem("username");
     if (message) {
-      setMessages((prevState) => [
-        ...prevState,
-        {
-          name: "You",
-          text: message,
-        },
-      ]);
+      socket.emit("send_message", { name, text: message });
       messageRef.current.value = "";
     }
   };
