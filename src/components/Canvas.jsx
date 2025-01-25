@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Options from "./Options";
+import { socket } from "../socket";
 
-export default function Canvas() {
+export default function ({ roomID }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -51,6 +52,10 @@ export default function Canvas() {
     ctxRef.current = ctx;
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    socket.on("recive_drawing", (canvasData) => {
+      coordinates.current = canvasData;
+      resizeCanvas();
+    });
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
@@ -103,6 +108,7 @@ export default function Canvas() {
       const lastPath = coordinates.current[coordinates.current.length - 1];
       lastPath.push([offsetX / width.current, offsetY / height.current]);
     }
+    socket.emit("send_drawing", coordinates.current, roomID.current);
   };
 
   const stopDrawing = () => {

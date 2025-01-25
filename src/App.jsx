@@ -19,10 +19,10 @@ export default function () {
           <div className="game">
             <Players players={players} />
             <div className="board">
-              <Canvas/>
+              <Canvas roomID={roomID} />
             </div>
             <div className="chatbox">
-              <ChatBox  name={name} roomID={roomID}/>
+              <ChatBox name={name} roomID={roomID} />
             </div>
           </div>
         </Word>
