@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { socket } from "../socket";
-import useName from "../hooks/useName";
 
 export default function ({ setPlayers, name, roomID }) {
   const [username, setName] = useState("");
   const handlePlay = (e) => {
     socket.connect();
     socket.on("connect", () => {
-      const playerName = username.trim() || useName();
+      const playerName = username.trim() || "player";
       socket.emit("join", playerName);
       socket.on("joined", (room) => {
         socket.on("players", (players) => setPlayers(players));

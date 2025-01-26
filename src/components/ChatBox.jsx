@@ -33,24 +33,40 @@ export default function ({ name, roomID }) {
   }, [messages]);
 
   return (
-    <>
-      <div ref={chatsRef} className="chats">
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div ref={chatsRef}>
         {messages.map((message, idx) => (
-          <div key={idx} className="message">
+          <div key={idx}>
             <strong>{message.name}</strong> : <div>{message.text}</div>
           </div>
         ))}
       </div>
-      <form className="text">
+      <form
+        style={{
+          display: "flex",
+          width: "100%",
+          marginTop: "auto",
+        }}
+      >
         <input
           type="text"
           placeholder="Type your message..."
           ref={messageRef}
+          style={{
+            width: "100%"
+          }}
         />
         <button onClick={sendMessage} type="submit">
           Send
         </button>
       </form>
-    </>
+    </div>
   );
 }

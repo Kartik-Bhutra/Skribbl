@@ -6,10 +6,10 @@
 body {
   background-image: url("/bgImage.png");
   height: 100vh;
-  /* overflow: hidden;  */
+  width: 100vw;
 }
 
-#root {
+/* #root {
   height: 100%;
 }
 
@@ -95,4 +95,4 @@ canvas {
 
 .text button{
   padding: 0.5rem;
-}
+} */

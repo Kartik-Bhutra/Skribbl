@@ -58,6 +58,8 @@ export default function ({ roomID }) {
     });
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      socket.emit("leave_room", roomID.current);
+      socket.disconnect();
     };
   }, []);
 
@@ -171,6 +173,11 @@ export default function ({ roomID }) {
   return (
     <>
       <canvas
+        style={{
+          width: "100%",
+          height: "100%",
+          touchAction: "none",
+        }}
         ref={canvasRef}
         onPointerDown={startDrawing}
         onPointerMove={draw}
@@ -178,13 +185,13 @@ export default function ({ roomID }) {
         onPointerCancel={stopDrawing}
         onPointerLeave={stopDrawing}
       ></canvas>
-      <Options
+      {/* <Options
         setClear={setClear}
         setUndo={setUndo}
         setErase={setErase}
         setFill={setFill}
         setColor={setColor}
-      />
+      /> */}
     </>
   );
 }
