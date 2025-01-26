@@ -29,15 +29,13 @@ export default function () {
               justifyContent: "space-between",
               width: "90%",
               height: "90%",
+              gap: "1rem",
             }}
           >
             <div
               style={{
-                width: "10%",
+                width: "20%",
                 height: "100%",
-                borderRight: "1px solid black",
-                borderTop: "1px solid black",
-                borderBottom: "1px solid black",
               }}
             >
               <Players players={players} />
@@ -46,8 +44,7 @@ export default function () {
               style={{
                 width: "100%",
                 height: "100%",
-                borderTop: "1px solid black",
-                borderBottom: "1px solid black",
+                border: "1px solid black",
                 backgroundColor: "white",
               }}
             >
@@ -55,9 +52,8 @@ export default function () {
             </div>
             <div
               style={{
-                width: "20%",
+                width: "30%",
                 height: "100%",
-                borderLeft: "1px solid black",
                 borderTop: "1px solid black",
                 borderBottom: "1px solid black",
                 backgroundColor: "white",
