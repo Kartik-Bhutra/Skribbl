@@ -26,10 +26,9 @@ export default function () {
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
               width: "90%",
               height: "90%",
-              gap: "1rem",
+              gap: "0.25rem",
             }}
           >
             <div
@@ -44,8 +43,8 @@ export default function () {
               style={{
                 width: "100%",
                 height: "100%",
-                border: "1px solid black",
-                backgroundColor: "white",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <Canvas roomID={roomID} />

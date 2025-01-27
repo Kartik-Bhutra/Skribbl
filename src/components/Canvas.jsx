@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Options from "./Options";
 import { socket } from "../socket";
-
 export default function ({ roomID }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -14,7 +13,6 @@ export default function ({ roomID }) {
   const [erase, setErase] = useState(false);
   const [fill, setFill] = useState(false);
   const [color, setColor] = useState("#000000");
-
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     let { width: canvasWidth, height: canvasHeight } =
@@ -27,7 +25,6 @@ export default function ({ roomID }) {
     height.current = canvasHeight;
     redraw();
   };
-
   const redraw = () => {
     const ctx = ctxRef.current;
     ctx.clearRect(0, 0, width.current, height.current);
@@ -36,16 +33,23 @@ export default function ({ roomID }) {
       ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
       for (let i = 1; i < path.length; i++) {
         const [x, y] = path[i];
-        ctx.lineTo(x * width.current, y * height.current);
+        const canvasX = x * width.current;
+        const canvasY = y * height.current;
+        ctx.lineTo(canvasX, canvasY);
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 12;
+        ctx.lineCap = "round";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(canvasX, canvasY);
       }
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 8;
-      ctx.lineCap = "round";
-      ctx.stroke();
       ctx.closePath();
     }
   };
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -62,7 +66,6 @@ export default function ({ roomID }) {
       socket.disconnect();
     };
   }, []);
-
   useEffect(() => {
     if (clear) {
       const ctx = ctxRef.current;
@@ -76,7 +79,6 @@ export default function ({ roomID }) {
       setUndo(false);
     }
   }, [clear, undo]);
-
   const startDrawing = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
     if (fill) {
@@ -93,32 +95,34 @@ export default function ({ roomID }) {
       ]);
     }
   };
-
   const draw = (e) => {
     if (!isDrawing.current) return;
     const { offsetX, offsetY } = e.nativeEvent;
     const ctx = ctxRef.current;
-
     if (erase) {
       ctx.clearRect(offsetX - 5, offsetY - 5, 10, 10);
     } else {
       ctx.lineTo(offsetX, offsetY);
       ctx.strokeStyle = "red";
-      ctx.lineWidth = 8;
+      ctx.lineWidth = 12;
       ctx.lineCap = "round";
       ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(offsetX, offsetY, 6, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(offsetX, offsetY);
       const lastPath = coordinates.current[coordinates.current.length - 1];
       lastPath.push([offsetX / width.current, offsetY / height.current]);
     }
     socket.emit("send_drawing", coordinates.current, roomID.current);
   };
-
   const stopDrawing = () => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
     ctxRef.current.closePath();
   };
-
   const fillColor = (startX, startY, fillColor) => {
     const ctx = ctxRef.current;
     const canvas = canvasRef.current;
@@ -137,61 +141,74 @@ export default function ({ roomID }) {
       b: parseInt(fillColor.slice(5, 7), 16),
       a: 255,
     };
-    if (
-      startColor.r === targetColor.r &&
-      startColor.g === targetColor.g &&
-      startColor.b === targetColor.b &&
-      startColor.a === targetColor.a
-    ) {
-      return;
-    }
+    const isSameColor = (index) =>
+      data[index] === startColor.r &&
+      data[index + 1] === startColor.g &&
+      data[index + 2] === startColor.b &&
+      data[index + 3] === startColor.a;
+    const setColor = (index) => {
+      data[index] = targetColor.r;
+      data[index + 1] = targetColor.g;
+      data[index + 2] = targetColor.b;
+      data[index + 3] = targetColor.a;
+    };
     const stack = [[startX, startY]];
     while (stack.length > 0) {
       const [x, y] = stack.pop();
       const index = (y * canvas.width + x) * 4;
-
-      if (
-        data[index] === startColor.r &&
-        data[index + 1] === startColor.g &&
-        data[index + 2] === startColor.b &&
-        data[index + 3] === startColor.a
-      ) {
-        data[index] = targetColor.r;
-        data[index + 1] = targetColor.g;
-        data[index + 2] = targetColor.b;
-        data[index + 3] = targetColor.a;
-
+      if (isSameColor(index)) {
+        setColor(index);
         if (x > 0) stack.push([x - 1, y]);
         if (x < canvas.width - 1) stack.push([x + 1, y]);
         if (y > 0) stack.push([x, y - 1]);
         if (y < canvas.height - 1) stack.push([x, y + 1]);
+        if (x > 0 && y > 0) stack.push([x - 1, y - 1]);
+        if (x < canvas.width - 1 && y > 0) stack.push([x + 1, y - 1]);
+        if (x > 0 && y < canvas.height - 1) stack.push([x - 1, y + 1]);
+        if (x < canvas.width - 1 && y < canvas.height - 1)
+          stack.push([x + 1, y + 1]);
       }
     }
     ctx.putImageData(imageData, 0, 0);
   };
-
   return (
     <>
-      <canvas
+      <div
         style={{
           width: "100%",
           height: "100%",
-          touchAction: "none",
+          backgroundColor: "white",
+          border: "1px solid black",
         }}
-        ref={canvasRef}
-        onPointerDown={startDrawing}
-        onPointerMove={draw}
-        onPointerUp={stopDrawing}
-        onPointerCancel={stopDrawing}
-        onPointerLeave={stopDrawing}
-      ></canvas>
-      {/* <Options
-        setClear={setClear}
-        setUndo={setUndo}
-        setErase={setErase}
-        setFill={setFill}
-        setColor={setColor}
-      /> */}
+      >
+        <canvas
+          style={{
+            width: "100%",
+            height: "100%",
+            touchAction: "none",
+          }}
+          ref={canvasRef}
+          onPointerDown={startDrawing}
+          onPointerMove={draw}
+          onPointerUp={stopDrawing}
+          onPointerCancel={stopDrawing}
+          onPointerLeave={stopDrawing}
+        ></canvas>
+      </div>
+      <div
+        style={{
+          width: "100%",
+          height: "10%",
+        }}
+      >
+        <Options
+          setClear={setClear}
+          setUndo={setUndo}
+          setErase={setErase}
+          setFill={setFill}
+          setColor={setColor}
+        />
+      </div>
     </>
   );
 }

@@ -50,13 +50,13 @@ export default function ({ name, roomID }) {
           <div
             key={idx}
             style={{
-              padding: "12px",
-              fontSize: "1rem",
+              padding: "8px",
+              fontSize: "1.125rem",
               wordWrap: "break-word",
               wordBreak: "break-word",
               backgroundColor: idx % 2 === 0 ? "#e6f7ff" : "#ffffff",
               borderRadius: "8px",
-              margin: "8px 0",
+              margin: "4px 0",
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             }}
           >

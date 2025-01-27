@@ -4,16 +4,15 @@ export default function ({ players }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#ffffff", 
-        borderRadius: "8px", 
-        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)", 
-        overflow: "hidden", 
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
         width: "100%",
-        maxWidth: "400px", 
-        margin: "20px auto", 
+        maxWidth: "400px",
+        margin: "20px auto",
       }}
     >
-      {players.map((player) => {
+      {players.map((player, idx) => {
         return (
           <div
             key={player.socketID}
@@ -22,15 +21,15 @@ export default function ({ players }) {
               justifyContent: "space-between",
               padding: "15px",
               gap: "20px",
-              borderBottom: "1px solid #ddd", 
-              alignItems: "center", 
-              fontSize: "1.1rem", 
+              borderTop: idx ? "1px solid #ddd" : "",
+              alignItems: "center",
+              fontSize: "1.1rem",
             }}
           >
             <div
               style={{
                 fontWeight: "bold",
-                color: "#333", 
+                color: "#333",
               }}
             >
               {player.name}
@@ -38,8 +37,8 @@ export default function ({ players }) {
             <div
               style={{
                 fontWeight: "bold",
-                color: "#007bff", 
-                fontSize: "1.2rem", 
+                color: "#007bff",
+                fontSize: "1.2rem",
               }}
             >
               {player.score}
