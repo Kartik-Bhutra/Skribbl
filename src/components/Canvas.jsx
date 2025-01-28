@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Options from "./Options";
 import { socket } from "../socket";
+
 export default function ({ roomID }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const isDrawing = useRef(false);
   const coordinates = useRef([]);
   const width = useRef(0);
   const height = useRef(0);
@@ -13,50 +13,59 @@ export default function ({ roomID }) {
   const [erase, setErase] = useState(false);
   const [fill, setFill] = useState(false);
   const [color, setColor] = useState("#000000");
+
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     let { width: canvasWidth, height: canvasHeight } =
       window.getComputedStyle(canvas);
-    canvasWidth = parseFloat(canvasWidth);
-    canvasHeight = parseFloat(canvasHeight);
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    width.current = canvasWidth;
-    height.current = canvasHeight;
+    canvas.width = parseFloat(canvasWidth);
+    canvas.height = parseFloat(canvasHeight);
+    width.current = canvas.width;
+    height.current = canvas.height;
     redraw();
   };
+
   const redraw = () => {
     const ctx = ctxRef.current;
     ctx.clearRect(0, 0, width.current, height.current);
-    for (const path of coordinates.current) {
-      ctx.beginPath();
-      ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
-      for (let i = 1; i < path.length; i++) {
-        const [x, y] = path[i];
-        const canvasX = x * width.current;
-        const canvasY = y * height.current;
-        ctx.lineTo(canvasX, canvasY);
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 12;
-        ctx.lineCap = "round";
-        ctx.stroke();
+
+    coordinates.current.forEach((portion) => {
+      if (portion.type === "path") {
+        const { path, lineWidth, color } = portion;
         ctx.beginPath();
-        ctx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(canvasX, canvasY);
+        ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
+        path.forEach(([x, y]) => {
+          const canvasX = x * width.current;
+          const canvasY = y * height.current;
+          ctx.lineTo(canvasX, canvasY);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lineWidth;
+          ctx.lineCap = "round";
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(canvasX, canvasY, lineWidth / 2, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(canvasX, canvasY);
+        });
+        ctx.closePath();
+      } else if (portion.type === "fill") {
+        fillColor(
+          Math.floor(portion.x * width.current),
+          Math.floor(portion.y * height.current),
+          portion.color
+        );
       }
-      ctx.closePath();
-    }
+    });
   };
+
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctxRef.current = ctx;
+    ctxRef.current = canvas.getContext("2d");
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-    socket.on("recive_drawing", (canvasData) => {
+    socket.on("recieve_drawing", (canvasData) => {
       coordinates.current = canvasData;
       resizeCanvas();
     });
@@ -66,141 +75,163 @@ export default function ({ roomID }) {
       socket.disconnect();
     };
   }, []);
+
   useEffect(() => {
     if (clear) {
-      const ctx = ctxRef.current;
-      ctx.clearRect(0, 0, width.current, height.current);
+      ctxRef.current.clearRect(0, 0, width.current, height.current);
       coordinates.current = [];
+      socket.emit("send_drawing", coordinates.current, roomID.current);
       setClear(false);
     }
     if (undo) {
       coordinates.current.pop();
+      socket.emit("send_drawing", coordinates.current, roomID.current);
       redraw();
       setUndo(false);
     }
+    setFill(false);
+    setErase(false);
   }, [clear, undo]);
-  const startDrawing = (e) => {
+
+  const handlePointerDown = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
     if (fill) {
-      setFill(false);
+      coordinates.current.push({
+        type: "fill",
+        x: offsetX / width.current,
+        y: offsetY / height.current,
+        color,
+      });
+      socket.emit("send_drawing", coordinates.current, roomID.current);
       fillColor(Math.floor(offsetX), Math.floor(offsetY), color);
       return;
     }
-    isDrawing.current = true;
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(offsetX, offsetY);
-    if (!erase) {
-      coordinates.current.push([
-        [offsetX / width.current, offsetY / height.current],
-      ]);
-    }
+    coordinates.current.push({
+      type: "path",
+      path: [[offsetX / width.current, offsetY / height.current]],
+      color: erase ? "white" : color,
+      lineWidth: 12,
+    });
   };
-  const draw = (e) => {
-    if (!isDrawing.current) return;
+
+  const handlePointerMove = (e) => {
+    if (e.buttons !== 1) return;
+    if (fill) {
+      return;
+    }
     const { offsetX, offsetY } = e.nativeEvent;
     const ctx = ctxRef.current;
     if (erase) {
       ctx.clearRect(offsetX - 5, offsetY - 5, 10, 10);
     } else {
       ctx.lineTo(offsetX, offsetY);
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = color;
       ctx.lineWidth = 12;
       ctx.lineCap = "round";
       ctx.stroke();
       ctx.beginPath();
       ctx.arc(offsetX, offsetY, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "red";
+      ctx.fillStyle = color;
       ctx.fill();
       ctx.beginPath();
       ctx.moveTo(offsetX, offsetY);
-      const lastPath = coordinates.current[coordinates.current.length - 1];
-      lastPath.push([offsetX / width.current, offsetY / height.current]);
+    }
+    if (coordinates.current[coordinates.current.length - 1].type === "path") {
+      coordinates.current[coordinates.current.length - 1].path.push([
+        offsetX / width.current,
+        offsetY / height.current,
+      ]);
     }
     socket.emit("send_drawing", coordinates.current, roomID.current);
   };
-  const stopDrawing = () => {
-    if (!isDrawing.current) return;
-    isDrawing.current = false;
-    ctxRef.current.closePath();
-  };
+
   const fillColor = (startX, startY, fillColor) => {
-    const ctx = ctxRef.current;
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    const startIndex = (startY * canvas.width + startX) * 4;
-    const startColor = {
-      r: data[startIndex],
-      g: data[startIndex + 1],
-      b: data[startIndex + 2],
-      a: data[startIndex + 3],
-    };
+    const width = canvas.width;
+    const height = canvas.height;
+
     const targetColor = {
       r: parseInt(fillColor.slice(1, 3), 16),
       g: parseInt(fillColor.slice(3, 5), 16),
       b: parseInt(fillColor.slice(5, 7), 16),
       a: 255,
     };
-    const isSameColor = (index) =>
-      data[index] === startColor.r &&
-      data[index + 1] === startColor.g &&
-      data[index + 2] === startColor.b &&
-      data[index + 3] === startColor.a;
+
+    const startIndex = (startY * width + startX) * 4;
+    const startColor = {
+      r: data[startIndex],
+      g: data[startIndex + 1],
+      b: data[startIndex + 2],
+      a: data[startIndex + 3],
+    };
+
+    const tolerance = 40;
+    const visited = new Uint8Array(width * height);
+
+    const colorMatch = (index) => {
+      return (
+        Math.abs(data[index] - startColor.r) <= tolerance &&
+        Math.abs(data[index + 1] - startColor.g) <= tolerance &&
+        Math.abs(data[index + 2] - startColor.b) <= tolerance &&
+        Math.abs(data[index + 3] - startColor.a) <= tolerance
+      );
+    };
+
     const setColor = (index) => {
       data[index] = targetColor.r;
       data[index + 1] = targetColor.g;
       data[index + 2] = targetColor.b;
       data[index + 3] = targetColor.a;
     };
-    const stack = [[startX, startY]];
-    while (stack.length > 0) {
-      const [x, y] = stack.pop();
-      const index = (y * canvas.width + x) * 4;
-      if (isSameColor(index)) {
+
+    const queue = [[startX, startY]];
+
+    while (queue.length) {
+      const [x, y] = queue.shift();
+      const index = (y * width + x) * 4;
+
+      if (visited[y * width + x] === 0 && colorMatch(index)) {
         setColor(index);
-        if (x > 0) stack.push([x - 1, y]);
-        if (x < canvas.width - 1) stack.push([x + 1, y]);
-        if (y > 0) stack.push([x, y - 1]);
-        if (y < canvas.height - 1) stack.push([x, y + 1]);
-        if (x > 0 && y > 0) stack.push([x - 1, y - 1]);
-        if (x < canvas.width - 1 && y > 0) stack.push([x + 1, y - 1]);
-        if (x > 0 && y < canvas.height - 1) stack.push([x - 1, y + 1]);
-        if (x < canvas.width - 1 && y < canvas.height - 1)
-          stack.push([x + 1, y + 1]);
+        visited[y * width + x] = 1;
+
+        if (x > 0) queue.push([x - 1, y]);
+        if (x < width - 1) queue.push([x + 1, y]);
+        if (y > 0) queue.push([x, y - 1]);
+        if (y < height - 1) queue.push([x, y + 1]);
+
+        if (x > 0 && y > 0) queue.push([x - 1, y - 1]);
+        if (x < width - 1 && y > 0) queue.push([x + 1, y - 1]);
+        if (x > 0 && y < height - 1) queue.push([x - 1, y + 1]);
+        if (x < width - 1 && y < height - 1) queue.push([x + 1, y + 1]);
       }
     }
+
     ctx.putImageData(imageData, 0, 0);
   };
+
   return (
     <>
       <div
         style={{
           width: "100%",
-          height: "100%",
+          height: "90%",
           backgroundColor: "white",
           border: "1px solid black",
         }}
       >
         <canvas
-          style={{
-            width: "100%",
-            height: "100%",
-            touchAction: "none",
-          }}
+          style={{ width: "100%", height: "100%", touchAction: "none" }}
           ref={canvasRef}
-          onPointerDown={startDrawing}
-          onPointerMove={draw}
-          onPointerUp={stopDrawing}
-          onPointerCancel={stopDrawing}
-          onPointerLeave={stopDrawing}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
         ></canvas>
       </div>
-      <div
-        style={{
-          width: "100%",
-          height: "10%",
-        }}
-      >
+      <div style={{ width: "100%", height: "10%" }}>
         <Options
           setClear={setClear}
           setUndo={setUndo}

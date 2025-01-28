@@ -45,13 +45,12 @@ export default function Options({
         display: "flex",
         width: "100%",
         height: "100%",
-        backgroundColor: "#f9f9f9",
-        border: "1px solid black",
+        justifyContent: "space-between",
       }}
     >
       <div
         style={{
-          width: "50%",
+          width: "40%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -82,55 +81,100 @@ export default function Options({
           </div>
         ))}
       </div>
-      <button
+      <div
         style={{
-          width: "5%",
-          backgroundImage: `url("/pencil.gif")`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          border: "none",
-          backgroundColor: "#386895",
+          display: "flex",
+          width: "40%",
+          height: "100%",
         }}
-      ></button>
-      <button
-        style={{
-          width: "5%",
-          backgroundImage: `url("/undo.gif")`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          border: "none",
-          backgroundColor: "#386895",
-        }}
-      ></button>
-      <button
-        style={{
-          width: "5%",
-          backgroundImage: `url("/bucket.gif")`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          border: "none",
-          backgroundColor: "#386895",
-        }}
-      ></button>
-      <button
-        style={{
-          width: "5%",
-          backgroundImage: `url("/clear.gif")`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          border: "none",
-          backgroundColor: "#386895",
-        }}
-      ></button>
-      {/* <button onClick={() => setClear(true)}>Clear</button>
-      <button onClick={() => setErase((prev) => !prev)}>Erase</button>
-      <button onClick={() => setUndo(true)}>Undo</button>
-      <button onClick={() => setFill(true)}>Fill</button>
-       */}
+      >
+        <button
+          style={{
+            width: "100%",
+            border: "none",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f9f9f9",
+          }}
+        >
+          <div
+            style={{
+              filter: "brightness(0)",
+              backgroundImage: `url("/size.gif")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "100%",
+              backgroundSize: "contain",
+            }}
+          ></div>
+        </button>
+        <button
+          style={{
+            width: "100%",
+            backgroundImage: `url("/pencil.gif")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            backgroundColor: "white",
+          }}
+          onClick={() => {
+            setFill(false);
+            setErase(false);
+          }}
+        ></button>
+        <button
+          style={{
+            width: "100%",
+            backgroundImage: `url("/bucket.gif")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            backgroundColor: "white",
+          }}
+          onClick={() => {
+            setFill(true);
+            setErase(false);
+          }}
+        ></button>
+        <button
+          style={{
+            width: "100%",
+            backgroundImage: `url("/pencil.gif")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            backgroundColor: "white",
+          }}
+          onClick={() => {
+            setErase(true);
+            setFill(false);
+          }}
+        ></button>
+        <button
+          style={{
+            width: "100%",
+            backgroundImage: `url("/undo.gif")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            backgroundColor: "white",
+          }}
+          onClick={() => setUndo(true)}
+        ></button>
+        <button
+          style={{
+            width: "100%",
+            backgroundImage: `url("/clear.gif")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            border: "none",
+            backgroundColor: "white",
+          }}
+          onClick={() => setClear(true)}
+        ></button>
+      </div>
     </div>
   );
 }
