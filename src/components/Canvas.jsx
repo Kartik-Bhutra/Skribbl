@@ -25,31 +25,34 @@ export default function ({ roomID }) {
     redraw();
   };
 
+  const createLine = ({ path, lineWidth, color }) => {
+    const ctx = ctxRef.current;
+    ctx.beginPath();
+    ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
+    path.forEach(([x, y]) => {
+      const canvasX = x * width.current;
+      const canvasY = y * height.current;
+      ctx.lineTo(canvasX, canvasY);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(canvasX, canvasY, lineWidth / 2, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(canvasX, canvasY);
+    });
+    ctx.closePath();
+  };
+
   const redraw = () => {
     const ctx = ctxRef.current;
     ctx.clearRect(0, 0, width.current, height.current);
-
     coordinates.current.forEach((portion) => {
       if (portion.type === "path") {
-        const { path, lineWidth, color } = portion;
-        ctx.beginPath();
-        ctx.moveTo(path[0][0] * width.current, path[0][1] * height.current);
-        path.forEach(([x, y]) => {
-          const canvasX = x * width.current;
-          const canvasY = y * height.current;
-          ctx.lineTo(canvasX, canvasY);
-          ctx.strokeStyle = color;
-          ctx.lineWidth = lineWidth;
-          ctx.lineCap = "round";
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(canvasX, canvasY, lineWidth / 2, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(canvasX, canvasY);
-        });
-        ctx.closePath();
+        createLine(portion);
       } else if (portion.type === "fill") {
         fillColor(
           Math.floor(portion.x * width.current),
@@ -69,6 +72,28 @@ export default function ({ roomID }) {
       coordinates.current = canvasData;
       resizeCanvas();
     });
+    socket.on("undo", () => {
+      coordinates.current.pop();
+      const ctx = ctxRef.current;
+      ctx.clearRect(0, 0, width.current, height.current);
+      redraw();
+    });
+    socket.on("fill", (fillData) => {
+      coordinates.current.push(fillData);
+      fillColor(
+        Math.floor(fillData.x * width.current),
+        Math.floor(fillData.y * height.current),
+        fillData.color
+      );
+    });
+    socket.on("path", (pathIdx, pathData) => {
+      coordinates.current[pathIdx] = pathData;
+      createLine(pathData);
+    });
+    socket.on("clear", () => {
+      const ctx = ctxRef.current;
+      ctx.clearRect(0, 0, width.current, height.current);
+    });
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       socket.emit("leave_room", roomID.current);
@@ -80,12 +105,12 @@ export default function ({ roomID }) {
     if (clear) {
       ctxRef.current.clearRect(0, 0, width.current, height.current);
       coordinates.current = [];
-      socket.emit("send_drawing", coordinates.current, roomID.current);
+      socket.emit("clear", roomID.current);
       setClear(false);
     }
     if (undo) {
       coordinates.current.pop();
-      socket.emit("send_drawing", coordinates.current, roomID.current);
+      socket.emit("undo", roomID.current);
       redraw();
       setUndo(false);
     }
@@ -94,15 +119,23 @@ export default function ({ roomID }) {
   }, [clear, undo]);
 
   const handlePointerDown = (e) => {
+    if (
+      coordinates.current.length &&
+      coordinates.current[coordinates.current.length - 1].type == "path" &&
+      coordinates.current[coordinates.current.length - 1].path.length === 1
+    ) {
+      coordinates.current.pop();
+    }
     const { offsetX, offsetY } = e.nativeEvent;
     if (fill) {
-      coordinates.current.push({
+      const fillData = {
         type: "fill",
         x: offsetX / width.current,
         y: offsetY / height.current,
         color,
-      });
-      socket.emit("send_drawing", coordinates.current, roomID.current);
+      };
+      coordinates.current.push(fillData);
+      socket.emit("fill", fillData, roomID.current);
       fillColor(Math.floor(offsetX), Math.floor(offsetY), color);
       return;
     }
@@ -144,12 +177,17 @@ export default function ({ roomID }) {
         offsetY / height.current,
       ]);
     }
-    socket.emit("send_drawing", coordinates.current, roomID.current);
+    socket.emit(
+      "path",
+      coordinates.current.length,
+      coordinates.current[coordinates.current.length - 1],
+      roomID.current
+    );
   };
 
   const fillColor = (startX, startY, fillColor) => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const width = canvas.width;
