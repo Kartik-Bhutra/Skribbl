@@ -5,6 +5,7 @@ export default function GameSettings() {
   const [roundCount, setRoundCount] = useState(3);
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
+  const [roomType, setRoomType] = useState("public");
   return (
     <div
       style={{
@@ -15,10 +16,53 @@ export default function GameSettings() {
         backgroundColor: "#2d2f3b",
         color: "white",
         height: "100%",
-        padding: "0.25rem",
-        boxSizing :"border-box",
+        padding: "10px",
+        boxSizing: "border-box",
       }}
     >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: "#3b3d4a",
+          padding: "10px",
+          borderRadius: "8px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
+      >
+        <label>Type</label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: roomType === "public" ? "#4CAF50" : "#ff4d4d",
+            padding: "6px 12px",
+            borderRadius: "20px",
+            cursor: "pointer",
+            transition: "0.3s",
+            width: "110px",
+            justifyContent: "space-between",
+          }}
+          onClick={() =>
+            setRoomType(roomType === "public" ? "private" : "public")
+          }
+        >
+          {roomType === "private" && <span>{roomType.toUpperCase()}</span>}
+          <div
+            style={{
+              width: "22px",
+              height: "22px",
+              backgroundColor: "white",
+              borderRadius: "50%",
+            }}
+          ></div>
+          {roomType === "public" && <span>{roomType.toUpperCase()}</span>}
+        </div>
+      </div>
       <div
         style={{
           display: "flex",
@@ -34,6 +78,16 @@ export default function GameSettings() {
             justifyContent: "space-between",
             width: "100%",
           }}
+        ></div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            fontSize: "18px",
+            fontWeight: "bold",
+          }}
         >
           <label>👤 Players</label>
           <select
@@ -41,6 +95,7 @@ export default function GameSettings() {
             onChange={(e) => setPlayerCount(e.target.value)}
             style={{
               width: "30%",
+              padding: "5px",
             }}
           >
             {[...Array(5)].map((_, i) => (
@@ -55,12 +110,15 @@ export default function GameSettings() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            fontSize: "18px",
+            fontWeight: "bold",
           }}
         >
           <label>⏳ Drawtime</label>
           <select
             style={{
               width: "30%",
+              padding: "5px",
             }}
             value={drawTime}
             onChange={(e) => setDrawTime(e.target.value)}
@@ -77,12 +135,15 @@ export default function GameSettings() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            fontSize: "18px",
+            fontWeight: "bold",
           }}
         >
           <label>🔄 Rounds</label>
           <select
             style={{
               width: "30%",
+              padding: "5px",
             }}
             value={roundCount}
             onChange={(e) => setRoundCount(e.target.value)}
@@ -120,6 +181,10 @@ export default function GameSettings() {
           width: "100%",
           height: "100%",
           resize: "none",
+          boxSizing: "border-box",
+          padding: "10px",
+          fontSize: "1.25rem",
+          border: "none",
         }}
       />
       <div
@@ -138,7 +203,8 @@ export default function GameSettings() {
             padding: "10px",
             border: "none",
             borderRadius: "5px",
-            fontSize: "16px",
+            fontSize: "18px",
+            fontWeight: "bold",
             cursor: "pointer",
           }}
         >
@@ -152,7 +218,8 @@ export default function GameSettings() {
             padding: "10px",
             border: "none",
             borderRadius: "5px",
-            fontSize: "16px",
+            fontSize: "18px",
+            fontWeight: "bold",
             cursor: "pointer",
           }}
         >
