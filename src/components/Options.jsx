@@ -50,7 +50,7 @@ export default function Options({
     >
       <div
         style={{
-          width: "40%",
+          width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -84,7 +84,7 @@ export default function Options({
       <div
         style={{
           display: "flex",
-          width: "40%",
+          width: "100%",
           height: "100%",
         }}
       >
