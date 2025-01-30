@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Options from "./Options";
+import Toolbar from "./Toolbar";
 import { socket } from "../socket";
 
 export default function ({ roomID }) {
@@ -270,7 +270,7 @@ export default function ({ roomID }) {
         ></canvas>
       </div>
       <div style={{ width: "100%", height: "10%" }}>
-        <Options
+        <Toolbar
           setClear={setClear}
           setUndo={setUndo}
           setErase={setErase}

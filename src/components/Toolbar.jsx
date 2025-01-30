@@ -1,12 +1,6 @@
 import { useRef } from "react";
 
-export default function Options({
-  setClear,
-  setUndo,
-  setErase,
-  setFill,
-  setColor,
-}) {
+export default function ({ setClear, setUndo, setErase, setFill, setColor }) {
   const colors = useRef([
     [
       "ffffff",

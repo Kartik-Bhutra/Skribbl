@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Canvas from "./components/Canvas";
 import ChatBox from "./components/ChatBox";
 import Players from "./components/Players";
+import GameSettings from "./components/GameSettings";
+
 import Room from "./components/Room";
 
 export default function () {
@@ -51,9 +53,11 @@ export default function () {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
+                position: "relative",
               }}
             >
-              <Canvas roomID={roomID} />
+              <GameSettings />
+              {/* <Canvas roomID={roomID} /> */}
             </div>
             {width >= 800 ? (
               <div
