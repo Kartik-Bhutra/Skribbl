@@ -1,6 +1,6 @@
 import { useState } from "react";
-export default function GameSettings() {
-  const [playerCount, setPlayerCount] = useState(8);
+export default function () {
+  const [playerCount, setPlayerCount] = useState(7);
   const [drawTime, setDrawTime] = useState(80);
   const [roundCount, setRoundCount] = useState(3);
   const [useCustomWords, setUseCustomWords] = useState(false);
@@ -98,7 +98,7 @@ export default function GameSettings() {
               padding: "5px",
             }}
           >
-            {[...Array(5)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <option key={i} value={i + 2}>
                 {i + 2}
               </option>

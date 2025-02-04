@@ -80,7 +80,7 @@ export default function ({ setPlayers, name, roomID }) {
           (e.target.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)")
         }
       />
-      <button
+      {/* <button
         onClick={handlePlay}
         style={{
           padding: "12px 20px",
@@ -106,7 +106,7 @@ export default function ({ setPlayers, name, roomID }) {
         }}
       >
         Play
-      </button>
+      </button> */}
       <button
         onClick={handlePlay}
         style={{
@@ -132,7 +132,7 @@ export default function ({ setPlayers, name, roomID }) {
           e.target.style.transform = "scale(1)";
         }}
       >
-        Create Private Room
+        Create Room
       </button>
     </div>
   );

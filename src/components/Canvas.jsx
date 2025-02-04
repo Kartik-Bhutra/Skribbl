@@ -68,10 +68,6 @@ export default function ({ roomID }) {
     ctxRef.current = canvas.getContext("2d");
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-    socket.on("recieve_drawing", (canvasData) => {
-      coordinates.current = canvasData;
-      resizeCanvas();
-    });
     socket.on("undo", () => {
       coordinates.current.pop();
       const ctx = ctxRef.current;
@@ -96,7 +92,6 @@ export default function ({ roomID }) {
     });
     return () => {
       window.removeEventListener("resize", resizeCanvas);
-      socket.emit("leave_room", roomID.current);
       socket.disconnect();
     };
   }, []);

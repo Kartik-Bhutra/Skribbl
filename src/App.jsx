@@ -3,7 +3,7 @@ import Canvas from "./components/Canvas";
 import ChatBox from "./components/ChatBox";
 import Players from "./components/Players";
 import GameSettings from "./components/GameSettings";
-
+import Panel from "./components/Panel";
 import Room from "./components/Room";
 
 export default function () {
@@ -19,84 +19,99 @@ export default function () {
   return (
     <>
       {players.length ? (
-        <div
-          style={{
-            width: "100vw",
-            height: "100vh",
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100vw",
+          height: "100vh",
+        }}>
+          <div style={{
+            width: "100%",
+            height: "8%",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+          }}>
+            <Panel setPlayers={setPlayers} />
+          </div>
           <div
             style={{
+              width: "100%",
+              height: "90%",
               display: "flex",
-              width: width >= 800 ? "90%" : "100%",
-              height: width >= 800 ? "90%" : "100%",
-              gap: width >= 800 ? "0.25rem" : "0",
-              flexDirection: width >= 800 ? "row" : "column",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {width >= 800 && (
-              <div
-                style={{
-                  width: "20%",
-                  height: "100%",
-                }}
-              >
-                <Players players={players} />
-              </div>
-            )}
             <div
               style={{
-                width: "100%",
-                height: "100%",
                 display: "flex",
-                flexDirection: "column",
-                position: "relative",
+                width: width >= 800 ? "90%" : "100%",
+                height: "100%",
+                gap: width >= 800 ? "0.25rem" : "0",
+                flexDirection: width >= 800 ? "row" : "column",
               }}
             >
-              <GameSettings />
-              {/* <Canvas roomID={roomID} /> */}
-            </div>
-            {width >= 800 ? (
-              <div
-                style={{
-                  width: "30%",
-                  height: "100%",
-                  borderTop: "1px solid black",
-                  borderBottom: "1px solid black",
-                  backgroundColor: "white",
-                }}
-              >
-                <ChatBox name={name} roomID={roomID} />
-              </div>
-            ) : (
-              <div
-                style={{
-                  width: "100%",
-                  height: "50%",
-                  display: "flex",
-                }}
-              >
+              {width >= 800 && (
                 <div
                   style={{
-                    width: "50%",
+                    width: "20%",
                     height: "100%",
                   }}
                 >
                   <Players players={players} />
                 </div>
+              )}
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                }}
+              >
+                <GameSettings />
+                {/* <Canvas roomID={roomID} /> */}
+              </div>
+              {width >= 800 ? (
                 <div
                   style={{
-                    width: "100%",
+                    width: "30%",
                     height: "100%",
+                    borderTop: "1px solid black",
+                    borderBottom: "1px solid black",
+                    backgroundColor: "white",
                   }}
                 >
                   <ChatBox name={name} roomID={roomID} />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "50%",
+                    display: "flex",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "50%",
+                      height: "100%",
+                    }}
+                  >
+                    <Players players={players} />
+                  </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <ChatBox name={name} roomID={roomID} />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ) : (
