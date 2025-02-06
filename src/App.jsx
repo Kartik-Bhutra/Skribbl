@@ -70,7 +70,7 @@ export default function () {
                   position: "relative",
                 }}
               >
-                <GameSettings />
+                <GameSettings name={name} roomID={roomID}/>
                 {/* <Canvas roomID={roomID} /> */}
               </div>
               {width >= 800 ? (

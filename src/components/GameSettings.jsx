@@ -1,11 +1,27 @@
-import { useState } from "react";
-export default function () {
+import { useState,useEffect } from "react";
+import { socket } from "../socket";
+export default function ({name,roomID}) {
+  
   const [playerCount, setPlayerCount] = useState(7);
   const [drawTime, setDrawTime] = useState(80);
   const [roundCount, setRoundCount] = useState(3);
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
   const [roomType, setRoomType] = useState("public");
+  useEffect(()=>{
+    socket.on("room_created",({room})=>{
+      roomID.current=room;
+    });
+  },[])
+  const startgame=()=>{
+    const settings={
+      playerCount,
+      drawTime,
+      roundCount,
+      roomType
+    };
+    socket.emit("create_room",settings);
+  };
   return (
     <div
       style={{
@@ -196,6 +212,7 @@ export default function () {
         }}
       >
         <button
+          onClick={startgame}
           style={{
             flex: "1",
             backgroundColor: "#4CAF50",
