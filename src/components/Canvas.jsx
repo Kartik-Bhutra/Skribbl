@@ -93,6 +93,10 @@ export default function ({ roomID }) {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       socket.disconnect();
+      socket.off("undo");
+      socket.off("clear");
+      socket.off("path");
+      socket.off("fill");
     };
   }, []);
 

@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useContext } from "react";
-import { wordContext } from "../context/ProvideWord";
 import { socket } from "../socket";
 export default function ({ name, roomID }) {
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
-  const word = useContext(wordContext);
   useEffect(() => {
     socket.on("recive_message", (message) => {
       setMessages((prevState) => [message, ...prevState]);
     });
+    return () => socket.off("recive_message")
   }, []);
   const sendMessage = (e) => {
     e.preventDefault();

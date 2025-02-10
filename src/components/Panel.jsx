@@ -57,16 +57,7 @@ export default function ({ setPlayers }) {
           padding: "10px",
         }}
           onClick={() => {
-            socket.off("connect");
-            socket.off("join");
-            socket.off("joined");
             socket.off("players");
-            socket.off("connect_error");
-            socket.off("undo");
-            socket.off("clear");
-            socket.off("path");
-            socket.off("fill");
-            socket.off("recive_message");
             socket.disconnect();
             setPlayers([]);
           }

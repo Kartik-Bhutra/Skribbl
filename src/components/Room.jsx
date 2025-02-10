@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { socket } from "../socket";
 
 export default function ({ setPlayers, name, roomID }) {
   const [username, setName] = useState("");
-  const handlePlay = (e) => {
-    socket.connect();
+
+  useEffect(() => {
     socket.on("connect", () => {
       const playerName = username.trim() || "player";
       socket.emit("join", playerName);
@@ -19,7 +19,13 @@ export default function ({ setPlayers, name, roomID }) {
       socket.disconnect();
       alert("connection error");
     });
-  };
+    return () => {
+      socket.off("connect");
+      socket.off("join");
+      socket.off("joined");
+      socket.off("connect_error");
+    }
+  }, []);
 
   return (
     <div
@@ -81,7 +87,7 @@ export default function ({ setPlayers, name, roomID }) {
         }
       />
       {/* <button
-        onClick={handlePlay}
+        onClick={() => socket.connect()}
         style={{
           padding: "12px 20px",
           fontSize: "16px",
@@ -108,7 +114,7 @@ export default function ({ setPlayers, name, roomID }) {
         Play
       </button> */}
       <button
-        onClick={handlePlay}
+        onClick={() => socket.connect()}
         style={{
           padding: "12px 20px",
           fontSize: "16px",
