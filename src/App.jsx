@@ -5,15 +5,20 @@ import Players from "./components/Players";
 import GameSettings from "./components/GameSettings";
 import Panel from "./components/Panel";
 import Room from "./components/Room";
+import { socket } from "./socket";
 
 export default function () {
   const [players, setPlayers] = useState([]);
   const name = useRef("");
   const roomID = useRef("");
   const [width, setWidth] = useState(window.innerWidth);
+  const [roomType, setRoomType] = useState("public");
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
+    window.addEventListener("beforeunload", (e) => {
+      socket.emit("leave_room", roomID.current, roomType);
+    });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   return (
@@ -31,7 +36,7 @@ export default function () {
             display: "flex",
             justifyContent: "center",
           }}>
-            <Panel setPlayers={setPlayers} />
+            <Panel setPlayers={setPlayers} roomID={roomID} roomType={roomType} />
           </div>
           <div
             style={{
@@ -70,7 +75,7 @@ export default function () {
                   position: "relative",
                 }}
               >
-                <GameSettings name={name} roomID={roomID}/>
+                <GameSettings name={name} roomID={roomID} setRoomType={setRoomType} roomType={roomType} />
                 {/* <Canvas roomID={roomID} /> */}
               </div>
               {width >= 800 ? (

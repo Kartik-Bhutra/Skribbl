@@ -1,26 +1,27 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { socket } from "../socket";
-export default function ({name,roomID}) {
-  
+export default function ({ name, roomID, setRoomType, roomType }) {
+
   const [playerCount, setPlayerCount] = useState(7);
   const [drawTime, setDrawTime] = useState(80);
   const [roundCount, setRoundCount] = useState(3);
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
-  const [roomType, setRoomType] = useState("public");
-  useEffect(()=>{
-    socket.on("room_created",({room})=>{
-      roomID.current=room;
+  useEffect(() => {
+    socket.on("room_created", ({ room }) => {
+      roomID.current = room;
     });
-  },[])
-  const startgame=()=>{
-    const settings={
+    return () => socket.off("room_created");
+  }, [])
+  const startgame = () => {
+    const settings = {
       playerCount,
       drawTime,
       roundCount,
-      roomType
+      roomType,
+      name
     };
-    socket.emit("create_room",settings);
+    socket.emit("create_room", settings);
   };
   return (
     <div

@@ -1,5 +1,6 @@
 import { socket } from "../socket";
-export default function ({ setPlayers }) {
+import Room from "./Room";
+export default function ({ setPlayers, roomID, roomType }) {
   return (
     <div
       style={{
@@ -58,6 +59,7 @@ export default function ({ setPlayers }) {
         }}
           onClick={() => {
             socket.off("players");
+            socket.emit("leave_room", roomID.current, roomType);
             socket.disconnect();
             setPlayers([]);
           }
