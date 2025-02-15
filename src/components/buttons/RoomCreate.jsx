@@ -1,8 +1,8 @@
 import createRoom from "../events/createRoom";
-export default function ({ type, roomID, username, name }) {
+export default function ({ roomID, username, name, setIsCreated }) {
   return (
     <button
-      onClick={() => createRoom(roomID,username,name)}
+      onClick={() => createRoom(roomID, username, name, setIsCreated)}
       style={{
         padding: "12px 20px",
         fontSize: "16px",
@@ -26,7 +26,7 @@ export default function ({ type, roomID, username, name }) {
         e.target.style.transform = "scale(1)";
       }}
     >
-      {type}
+      Create Room
     </button>
   )
 }

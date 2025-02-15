@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import Button from "./buttons/Room";
+import JoinButton from "./buttons/RoomJoin";
+import CreateButton from "./buttons/RoomCreate";
 import Input from "./inputs/Room";
 import connect from "./events/connect";
 import off from "./events/offRoom";
 
-export default function ({ name, roomID, setIsConnected }) {
+export default function ({ name, roomID, setIsCreated, setIsJoined }) {
   const [username, setName] = useState("");
+  const [roomid, setRoomid] = useState("");
   useEffect(() => {
-    connect(setIsConnected);
+    connect();
     return () => off()
   }, []);
 
@@ -45,9 +47,21 @@ export default function ({ name, roomID, setIsConnected }) {
           }}
         />
       </Link>
-      <Input setName={setName} username={username} />
-      {/* <Button type={"Join Room"} /> */}
-      <Button type={"Create Room"} roomID={roomID} username={username} name={name} />
+      <Input setAttr={setName} fieldAttr={username} type={"Enter your name"} />
+      <Input setAttr={setRoomid} fieldAttr={roomid} type={"Enter RoomID"} />
+      <JoinButton
+        roomID={roomID}
+        username={username}
+        name={name}
+        roomid={roomid}
+        setIsJoined={setIsJoined}
+      />
+      <CreateButton
+        roomID={roomID}
+        username={username}
+        name={name}
+        setIsCreated={setIsCreated}
+      />
     </div>
   );
 }

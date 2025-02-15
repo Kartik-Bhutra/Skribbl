@@ -8,7 +8,8 @@ import Room from "./components/Room";
 import { socket } from "./socket";
 
 export default function () {
-  const [isConnected, setIsConnected] = useState(false);
+  const [isJoined, setIsJoined] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
   const [players, setPlayers] = useState([]);
   const name = useRef("");
   const roomID = useRef("");
@@ -18,13 +19,13 @@ export default function () {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     window.addEventListener("beforeunload", (e) => {
-      socket.emit("leave_room", roomID.current, roomType);
+      socket.emit("leave_room", roomID.current);
     });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   return (
     <>
-      {isConnected ? (
+      {isCreated ? (
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -37,7 +38,7 @@ export default function () {
             display: "flex",
             justifyContent: "center",
           }}>
-            <Panel setPlayers={setPlayers} roomID={roomID} roomType={roomType} />
+            <Panel setPlayers={setPlayers} roomID={roomID} roomType={roomType} setIsCreated={setIsCreated} />
           </div>
           <div
             style={{
@@ -121,7 +122,7 @@ export default function () {
           </div>
         </div>
       ) : (
-        <Room name={name} roomID={roomID} setIsConnected={setIsConnected} />
+        <Room name={name} roomID={roomID} setIsCreated={setIsCreated} setIsJoined={setIsJoined} />
       )}
     </>
   );

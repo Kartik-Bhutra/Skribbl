@@ -1,10 +1,10 @@
-export default function ({setName, username}) {
+export default function ({ setAttr, fieldAttr, type }) {
   return (
     <input
       type="text"
-      placeholder="Enter your name"
-      value={username}
-      onChange={(e) => setName(e.target.value)}
+      placeholder={type}
+      value={fieldAttr}
+      onChange={(e) => setAttr(e.target.value)}
       style={{
         padding: "12px 15px",
         fontSize: "16px",
