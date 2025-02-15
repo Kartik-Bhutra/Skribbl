@@ -6,7 +6,11 @@ export default function (roomID, username, name, setIsCreated, setPlayers) {
     roomID.current = room_id;
     name.current = username;
     setIsCreated(true);
-    setPlayers([{ name: username, score: 0 }]);
+    setPlayers([{
+      name: username,
+      score: 0,
+      id: socket.id
+    }]);
   });
   socket.once("error_creating", () => {
     alert("error");

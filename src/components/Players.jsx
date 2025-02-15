@@ -1,4 +1,12 @@
-export default function ({ players }) {
+import { useEffect } from "react";
+import Player from "./containers/Player";
+import playerJoined from "./events/playerJoined";
+import playerLeave from "./events/playerLeave";
+export default function ({ players, setPlayers }) {
+  useEffect(() => {
+    playerJoined(setPlayers);
+    playerLeave(setPlayers);
+  }, []);
   return (
     <div
       style={{
@@ -12,40 +20,7 @@ export default function ({ players }) {
         margin: "20px auto",
       }}
     >
-      {players.map((player, idx) => {
-        return (
-          <div
-            key={idx}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "15px",
-              gap: "20px",
-              borderTop: idx ? "1px solid #ddd" : "",
-              alignItems: "center",
-              fontSize: "1.1rem",
-            }}
-          >
-            <div
-              style={{
-                fontWeight: "bold",
-                color: "#333",
-              }}
-            >
-              {player.name}
-            </div>
-            <div
-              style={{
-                fontWeight: "bold",
-                color: "#007bff",
-                fontSize: "1.2rem",
-              }}
-            >
-              {player.score}
-            </div>
-          </div>
-        );
-      })}
+      {players.map((player, idx) => <Player player={player} key={idx} idx={idx} />)}
     </div>
   );
 }

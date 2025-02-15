@@ -65,7 +65,7 @@ export default function () {
                     height: "100%",
                   }}
                 >
-                  <Players players={players} />
+                  <Players players={players} setPlayers={setPlayers}/>
                 </div>
               )}
               <div
@@ -112,7 +112,7 @@ export default function () {
                       height: "100%",
                     }}
                   >
-                    <Players players={players} />
+                    <Players players={players} setPlayers={setPlayers}/>
                   </div>
                   <div
                     style={{
