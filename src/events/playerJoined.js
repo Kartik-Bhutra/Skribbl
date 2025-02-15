@@ -1,4 +1,4 @@
-import { socket } from "../../socket";
+import { socket } from "../socket";
 
 export default function (setPlayers) {
   socket.on("new_player", (name, id) => {

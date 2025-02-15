@@ -1,7 +1,6 @@
-import { socket } from "../../socket";
+import { socket } from "../socket";
 
 export default function (username, name, roomid, roomID, setIsJoined, setPlayers) {
-  socket.once("connect", () => socket.emit("join_room", username, roomid));
   socket.once("joined", (players) => {
     roomID.current = roomid;
     name.current = players[players.length - 1].name;
@@ -12,5 +11,8 @@ export default function (username, name, roomid, roomID, setIsJoined, setPlayers
     alert("Wrong roomID");
     socket.off("joined");
   });
-  socket.connect();
+  if (!socket.connected) {
+    socket.connect();
+  }
+  socket.emit("join_room", username, roomid);
 }

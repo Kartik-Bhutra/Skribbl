@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Player from "./containers/Player";
-import playerJoined from "./events/playerJoined";
-import playerLeave from "./events/playerLeave";
+import playerJoined from "../events/playerJoined";
+import playerLeave from "../events/playerLeave";
 export default function ({ players, setPlayers }) {
   useEffect(() => {
     playerJoined(setPlayers);

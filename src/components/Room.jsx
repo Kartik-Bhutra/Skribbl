@@ -3,8 +3,8 @@ import { Link } from "react-router";
 import JoinButton from "./buttons/RoomJoin";
 import CreateButton from "./buttons/RoomCreate";
 import Input from "./inputs/Room";
-import connect from "./events/connect";
-import off from "./events/offRoom";
+import connect from "../events/connect";
+import off from "../events/offRoom";
 
 export default function ({ name, roomID, setIsCreated, setIsJoined, setPlayers }) {
   const [username, setName] = useState("");
