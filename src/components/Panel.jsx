@@ -44,7 +44,7 @@ export default function ({ setPlayers, roomID , setIsCreated}) {
         justifyContent: "center",
         alignItems: "center",
       }}>
-        WORD
+        {roomID.current}
       </div>
       <div style={{
         display: "flex",

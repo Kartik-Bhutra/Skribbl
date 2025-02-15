@@ -1,8 +1,8 @@
-import createRoom from "../events/createRoom";
-export default function ({ roomID, username, name, roomid, setIsJoined }) {
+import joinRoom from "../events/joinRoom";
+export default function ({ roomID, username, name, roomid, setIsJoined,setPlayers }) {
   return (
     <button
-      // onClick={() => createRoom(roomID, username, name, setIsCreated)}
+      onClick={() => joinRoom(username, name, roomid, roomID, setIsJoined,setPlayers)}
       style={{
         padding: "12px 20px",
         fontSize: "16px",

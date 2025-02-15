@@ -25,7 +25,7 @@ export default function () {
   }, []);
   return (
     <>
-      {isCreated ? (
+      {(isCreated || isJoined) ? (
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -77,8 +77,14 @@ export default function () {
                   position: "relative",
                 }}
               >
-                <GameSettings name={name} roomID={roomID} setRoomType={setRoomType} roomType={roomType} />
-                {/* <Canvas roomID={roomID} /> */}
+                {isCreated ?
+                  <GameSettings
+                    name={name}
+                    roomID={roomID}
+                    setRoomType={setRoomType}
+                    roomType={roomType} /> :
+                  <Canvas roomID={roomID} />
+                }
               </div>
               {width >= 800 ? (
                 <div
@@ -122,7 +128,13 @@ export default function () {
           </div>
         </div>
       ) : (
-        <Room name={name} roomID={roomID} setIsCreated={setIsCreated} setIsJoined={setIsJoined} />
+        <Room
+          name={name}
+          roomID={roomID}
+          setIsCreated={setIsCreated}
+          setIsJoined={setIsJoined}
+          setPlayers={setPlayers}
+        />
       )}
     </>
   );

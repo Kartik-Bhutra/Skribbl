@@ -15,7 +15,7 @@ export default function ({ players }) {
       {players.map((player, idx) => {
         return (
           <div
-            key={player.socketID}
+            key={idx}
             style={{
               display: "flex",
               justifyContent: "space-between",

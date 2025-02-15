@@ -6,7 +6,7 @@ import Input from "./inputs/Room";
 import connect from "./events/connect";
 import off from "./events/offRoom";
 
-export default function ({ name, roomID, setIsCreated, setIsJoined }) {
+export default function ({ name, roomID, setIsCreated, setIsJoined, setPlayers }) {
   const [username, setName] = useState("");
   const [roomid, setRoomid] = useState("");
   useEffect(() => {
@@ -55,12 +55,14 @@ export default function ({ name, roomID, setIsCreated, setIsJoined }) {
         name={name}
         roomid={roomid}
         setIsJoined={setIsJoined}
+        setPlayers={setPlayers}
       />
       <CreateButton
         roomID={roomID}
         username={username}
         name={name}
         setIsCreated={setIsCreated}
+        setPlayers={setPlayers}
       />
     </div>
   );
