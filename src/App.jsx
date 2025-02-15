@@ -8,6 +8,7 @@ import Room from "./components/Room";
 import { socket } from "./socket";
 
 export default function () {
+  const [isConnected, setIsConnected] = useState(false);
   const [players, setPlayers] = useState([]);
   const name = useRef("");
   const roomID = useRef("");
@@ -23,7 +24,7 @@ export default function () {
   }, []);
   return (
     <>
-      {players.length ? (
+      {isConnected ? (
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -120,7 +121,7 @@ export default function () {
           </div>
         </div>
       ) : (
-        <Room setPlayers={setPlayers} name={name} roomID={roomID} />
+        <Room name={name} roomID={roomID} setIsConnected={setIsConnected} />
       )}
     </>
   );

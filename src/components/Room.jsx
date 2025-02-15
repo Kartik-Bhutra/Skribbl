@@ -1,32 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { socket } from "../socket";
 import Button from "./buttons/Room";
-import Input from "./inputs/Room"
+import Input from "./inputs/Room";
+import connect from "./events/connect";
+import off from "./events/offRoom";
 
-export default function ({ setPlayers, name, roomID }) {
+export default function ({ name, roomID, setIsConnected }) {
   const [username, setName] = useState("");
-
   useEffect(() => {
-    socket.on("connect", () => {
-      const playerName = username.trim();
-      socket.emit("join", playerName);
-      socket.on("joined", (room) => {
-        socket.on("players", (players) => setPlayers(players));
-        name.current = playerName;
-        roomID.current = room;
-      });
-    });
-    socket.on("connect_error", () => {
-      socket.disconnect();
-      alert("connection error");
-    });
-    return () => {
-      socket.off("connect");
-      socket.off("join");
-      socket.off("joined");
-      socket.off("connect_error");
-    }
+    connect(setIsConnected);
+    return () => off()
   }, []);
 
   return (
@@ -63,8 +46,8 @@ export default function ({ setPlayers, name, roomID }) {
         />
       </Link>
       <Input setName={setName} username={username} />
-      {/* <Button /> */}
-      <Button />
+      {/* <Button type={"Join Room"} /> */}
+      <Button type={"Create Room"} roomID={roomID} username={username} name={name} />
     </div>
   );
 }
