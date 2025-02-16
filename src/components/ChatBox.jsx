@@ -1,28 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { useContext } from "react";
-import { socket } from "../socket";
+import Message from "./containers/Message";
+import Chat from "./inputs/Chat";
+import Send from "./buttons/Send";
+import recieveMessage from "../events/recieveMessage";
+import offMessage from "../events/offMessage";
 export default function ({ name, roomID }) {
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
   const chatsRef = useRef(null);
   useEffect(() => {
-    socket.on("recive_message", (message) => {
-      setMessages((prevState) => [message, ...prevState]);
-    });
-    return () => socket.off("recive_message")
+    recieveMessage(setMessages);
+    return () => offMessage();
   }, []);
-  const sendMessage = (e) => {
-    e.preventDefault();
-    const text = messageRef.current.value.trim();
-    if (text) {
-      socket.emit("send_message", {
-        name: name.current,
-        roomID: roomID.current,
-        text,
-      });
-      messageRef.current.value = "";
-    }
-  };
   return (
     <div
       style={{
@@ -46,38 +35,7 @@ export default function ({ name, roomID }) {
         }}
       >
         {messages.map((message, idx) => (
-          <div
-            key={idx}
-            style={{
-              padding: "8px",
-              fontSize: "1.125rem",
-              wordWrap: "break-word",
-              wordBreak: "break-word",
-              backgroundColor: idx % 2 === 0 ? "#e6f7ff" : "#ffffff",
-              borderRadius: "8px",
-              margin: "4px 0",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div>
-              <strong
-                style={{
-                  color: "#007bff",
-                  fontWeight: "bold",
-                }}
-              >
-                {message.name}
-              </strong>
-              :&nbsp;
-              <span
-                style={{
-                  color: "#333",
-                }}
-              >
-                {message.text}
-              </span>
-            </div>
-          </div>
+          <Message key={idx} idx={idx} message={message} />
         ))}
       </div>
       <form
@@ -90,36 +48,8 @@ export default function ({ name, roomID }) {
           boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <input
-          type="text"
-          placeholder="Type your message"
-          ref={messageRef}
-          style={{
-            width: "100%",
-            padding: "8px",
-            outline: "none",
-            border: "1px solid black",
-            fontSize: "1rem",
-            borderRadius: "5px",
-            backgroundColor: "#f9f9f9",
-          }}
-        />
-        <button
-          onClick={sendMessage}
-          type="submit"
-          style={{
-            padding: "8px",
-            border: "none",
-            backgroundColor: "#007bff",
-            color: "white",
-            borderRadius: "5px",
-            cursor: "pointer",
-            transition: "background-color 0.3s ease",
-            width: "40%",
-          }}
-        >
-          Send
-        </button>
+        <Chat messageRef={messageRef} />
+        <Send messageRef={messageRef} name={name} roomID={roomID} />
       </form>
     </div>
   );
