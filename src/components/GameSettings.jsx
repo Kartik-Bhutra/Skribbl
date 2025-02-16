@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Start from "./buttons/Start";
 import Option from "./inputs/Option";
 import Custom from "./inputs/Custom";
+import setting from "../events/setting";
+import offSetting from "../events/offSetting";
 export default function () {
   const [playerCount, setPlayerCount] = useState(7);
   const [drawTime, setDrawTime] = useState(80);
   const [roundCount, setRoundCount] = useState(3);
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
+  useEffect(() => {
+    setting(setPlayerCount, setDrawTime, setRoundCount, setCustomWords, setUseCustomWords);
+    return () => offSetting();
+  }, [])
   return (
     <div
       style={{

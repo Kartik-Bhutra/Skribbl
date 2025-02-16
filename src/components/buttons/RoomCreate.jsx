@@ -2,7 +2,7 @@ import createRoom from "../../events/createRoom";
 export default function ({ roomID, username, name, setPlayers }) {
   return (
     <button
-      onClick={() => createRoom(roomID, username, name, setPlayers)}
+      onClick={() => createRoom(username)}
       style={{
         padding: "12px 20px",
         fontSize: "16px",

@@ -8,6 +8,8 @@ import Room from "./components/Room";
 import { socket } from "./socket";
 
 export default function () {
+  const [isStarted, setIsStarted] = useState(false);
+  const [canAccess, setCanAccess] = useState(false);
   const [players, setPlayers] = useState([]);
   const name = useRef("");
   const roomID = useRef("");
@@ -15,11 +17,20 @@ export default function () {
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    window.addEventListener("beforeunload", (e) => {
+    window.addEventListener("beforeunload", () => {
       socket.emit("leave", roomID.current);
     });
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  useEffect(() => {
+    console.log(players);
+    if (!isStarted && players.length && players[0].id == socket.id) {
+      setCanAccess(true);
+    }
+    else if (isStarted) {
+      
+    }
+  }, [players, isStarted])
   return (
     <>
       {players.length ? (
@@ -73,14 +84,19 @@ export default function () {
                   flexDirection: "column",
                   position: "relative",
                 }}
-              >
-                {
-                  <GameSettings
-                    name={name}
-                    roomID={roomID}
-                  />
-                  // <Canvas roomID={roomID} />
+              >{!canAccess &&
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    zIndex: "100",
+                    backgroundColor: "black",
+                    opacity: "0.5",
+                  }}>
+                </div>
                 }
+                {isStarted ? <Canvas /> : <GameSettings />}
               </div>
               {width >= 800 ? (
                 <div

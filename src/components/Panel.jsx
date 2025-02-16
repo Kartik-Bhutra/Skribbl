@@ -1,5 +1,5 @@
 import { socket } from "../socket";
-export default function ({ setPlayers, roomID , setIsCreated}) {
+export default function ({ setPlayers, roomID }) {
   return (
     <div
       style={{
@@ -58,10 +58,10 @@ export default function ({ setPlayers, roomID , setIsCreated}) {
         }}
           onClick={() => {
             socket.off("players");
+            console.log(roomID);
             socket.emit("leave", roomID.current);
             socket.disconnect();
             setPlayers([]);
-            setIsCreated(false);
           }
           }
         >

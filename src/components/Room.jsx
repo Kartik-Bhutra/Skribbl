@@ -10,7 +10,7 @@ export default function ({ name, roomID, setPlayers }) {
   const [username, setName] = useState("");
   const [roomid, setRoomid] = useState("");
   useEffect(() => {
-    connect();
+    connect(roomID, name, setPlayers);
     return () => off()
   }, []);
 

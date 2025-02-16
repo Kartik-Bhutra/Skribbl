@@ -2,7 +2,7 @@ import joinRoom from "../../events/joinRoom";
 export default function ({ roomID, username, name, roomid, setPlayers }) {
   return (
     <button
-      onClick={() => joinRoom(username, name, roomid, roomID, setPlayers)}
+      onClick={() => joinRoom(username, roomid)}
       style={{
         padding: "12px 20px",
         fontSize: "16px",

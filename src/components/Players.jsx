@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import Player from "./containers/Player";
 import playerJoined from "../events/playerJoined";
 import playerLeave from "../events/playerLeave";
+import offPlayer from "../events/offPlayer";
 export default function ({ players, setPlayers }) {
   useEffect(() => {
     playerJoined(setPlayers);
     playerLeave(setPlayers);
+    return () => offPlayer();
   }, []);
   return (
     <div
