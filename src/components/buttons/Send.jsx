@@ -1,9 +1,9 @@
 import sendMessage from "../../events/sendMessage"
 
-export default function ({ name, roomID, messageRef }) {
+export default function ({ roomID, messageRef }) {
   return (
     <button
-      onClick={(e) => sendMessage(e, name, roomID, messageRef)}
+      onClick={(e) => sendMessage(e, roomID, messageRef)}
       type="submit"
       style={{
         padding: "8px",

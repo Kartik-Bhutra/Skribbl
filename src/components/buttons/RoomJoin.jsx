@@ -1,5 +1,5 @@
 import joinRoom from "../../events/joinRoom";
-export default function ({ roomID, username, name, roomid, setPlayers }) {
+export default function ({ username, roomid }) {
   return (
     <button
       onClick={() => joinRoom(username, roomid)}

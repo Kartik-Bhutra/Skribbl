@@ -1,6 +1,6 @@
 import { socket } from "../socket";
 
-export default function (roomID, name, setPlayers) {
+export default function (roomID, setPlayers, setGameSettings, setPlayerCount) {
   socket.on("connect", () => {
     console.log("Socket Connected");
   })
@@ -13,17 +13,17 @@ export default function (roomID, name, setPlayers) {
   });
   socket.once("created", (room_id, username) => {
     roomID.current = room_id;
-    name.current = username;
     setPlayers([{
       name: username,
       score: 0,
       id: socket.id
     }]);
   });
-  socket.on("joined", (players,roomid) => {
+  socket.on("joined", (players, roomid, playerCount, settings) => {
     roomID.current = roomid;
-    name.current = players[players.length - 1].name;
     setPlayers(players);
+    setGameSettings(settings);
+    setPlayerCount(playerCount);
   });
   socket.on("incorrect", () => {
     alert("Wrong roomID");

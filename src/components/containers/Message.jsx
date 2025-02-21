@@ -13,22 +13,7 @@ export default function ({ idx, message }) {
       }}
     >
       <div>
-        <strong
-          style={{
-            color: "#007bff",
-            fontWeight: "bold",
-          }}
-        >
-          {message.name}
-        </strong>
-        :&nbsp;
-        <span
-          style={{
-            color: "#333",
-          }}
-        >
-          {message.text}
-        </span>
+        {message}
       </div>
     </div>
   )

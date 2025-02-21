@@ -1,5 +1,6 @@
 import playerNO from "../../events/playerCount";
-export default function ({ playerCount, setPlayerCount, roomID }) {
+export default function ({ playerCount, setPlayerCount, roomID, startingIndex }) {
+  const optionAttr = [2, 3, 4, 5, 6, 7].filter(num => num >= startingIndex);
   return (
     <div
       style={{
@@ -23,7 +24,7 @@ export default function ({ playerCount, setPlayerCount, roomID }) {
           padding: "5px",
         }}
       >
-        {[2, 3, 4, 5].map((num) => <option key={num} value={num}>
+        {optionAttr.map((num) => <option key={num} value={num}>
           {num}
         </option>
         )}

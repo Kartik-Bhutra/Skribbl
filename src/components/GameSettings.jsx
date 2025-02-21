@@ -5,8 +5,7 @@ import Custom from "./inputs/Custom";
 import setting from "../events/setting";
 import offSetting from "../events/offSetting";
 import Setting from "./inputs/Setting";
-export default function ({ gameSettings, setGameSettings, roomID }) {
-  const [playerCount, setPlayerCount] = useState(7);
+export default function ({ gameSettings, setGameSettings, roomID, startingIndex, playerCount, setPlayerCount }) {
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function ({ gameSettings, setGameSettings, roomID }) {
           width: "100%",
         }}
       >
-        <Option playerCount={playerCount} setPlayerCount={setPlayerCount} roomID={roomID} />
+        <Option playerCount={playerCount} setPlayerCount={setPlayerCount} roomID={roomID} startingIndex={startingIndex} />
         <Setting gameSettings={gameSettings} setGameSettings={setGameSettings} optionAttr={[30, 60, 80, 100]} type={"drawTime"} roomID={roomID} />
         <Setting gameSettings={gameSettings} setGameSettings={setGameSettings} optionAttr={[1, 2, 3]} type={"roundCount"} roomID={roomID} />
       </div>

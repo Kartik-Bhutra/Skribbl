@@ -1,5 +1,5 @@
 import createRoom from "../../events/createRoom";
-export default function ({ roomID, username, name, setPlayers }) {
+export default function ({ username }) {
   return (
     <button
       onClick={() => createRoom(username)}

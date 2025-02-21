@@ -8,6 +8,7 @@ import Room from "./components/Room";
 import { socket } from "./socket";
 
 export default function () {
+  const [playerCount, setPlayerCount] = useState(7);
   const [gameSettings, setGameSettings] = useState({
     drawTime: 80,
     roundCount: 3,
@@ -15,7 +16,6 @@ export default function () {
   const [isStarted, setIsStarted] = useState(false);
   const [canAccess, setCanAccess] = useState(false);
   const [players, setPlayers] = useState([]);
-  const name = useRef("");
   const roomID = useRef("");
   const [width, setWidth] = useState(window.innerWidth);
   useEffect(() => {
@@ -102,6 +102,9 @@ export default function () {
                     gameSettings={gameSettings}
                     setGameSettings={setGameSettings}
                     roomID={roomID}
+                    startingIndex={players.length}
+                    playerCount={playerCount}
+                    setPlayerCount={setPlayerCount}
                   />}
               </div>
               {width >= 800 ? (
@@ -114,7 +117,7 @@ export default function () {
                     backgroundColor: "white",
                   }}
                 >
-                  <ChatBox name={name} roomID={roomID} />
+                  <ChatBox roomID={roomID} />
                 </div>
               ) : (
                 <div
@@ -138,7 +141,7 @@ export default function () {
                       height: "100%",
                     }}
                   >
-                    <ChatBox name={name} roomID={roomID} />
+                    <ChatBox roomID={roomID} />
                   </div>
                 </div>
               )}
@@ -147,9 +150,10 @@ export default function () {
         </div>
       ) : (
         <Room
-          name={name}
           roomID={roomID}
           setPlayers={setPlayers}
+          setGameSettings={setGameSettings}
+          setPlayerCount={setPlayerCount}
         />
       )}
     </>
