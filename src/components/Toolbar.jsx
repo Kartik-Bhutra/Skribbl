@@ -107,7 +107,7 @@ export default function ({ setClear, setUndo, setErase, setFill, setColor }) {
         <button
           style={{
             width: "100%",
-            backgroundImage: `url("/pencil.gif")`,
+            backgroundImage: `url("/brush.png")`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             border: "none",
@@ -121,7 +121,7 @@ export default function ({ setClear, setUndo, setErase, setFill, setColor }) {
         <button
           style={{
             width: "100%",
-            backgroundImage: `url("/bucket.gif")`,
+            backgroundImage: `url("/bucket.png")`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             border: "none",
@@ -135,7 +135,7 @@ export default function ({ setClear, setUndo, setErase, setFill, setColor }) {
         <button
           style={{
             width: "100%",
-            backgroundImage: `url("/pencil.gif")`,
+            backgroundImage: `url("/eraser.png")`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             border: "none",
@@ -160,7 +160,7 @@ export default function ({ setClear, setUndo, setErase, setFill, setColor }) {
         <button
           style={{
             width: "100%",
-            backgroundImage: `url("/clear.gif")`,
+            backgroundImage: `url("/clear.png")`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             border: "none",
