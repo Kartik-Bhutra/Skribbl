@@ -1,5 +1,6 @@
-import playerNO from "../../events/playerCount";
-export default function ({ playerCount, setPlayerCount, roomID }) {
+import gameData from "../../events/gameData"
+
+export default function ({ gameSettings, setGameSettings, optionAttr, type, roomID }) {
   return (
     <div
       style={{
@@ -11,19 +12,20 @@ export default function ({ playerCount, setPlayerCount, roomID }) {
         fontWeight: "bold",
       }}
     >
-      <label> Players </label>
+      <label> {type} </label>
       <select
-        value={playerCount}
+        value={gameSettings[type]}
         onChange={(e) => {
-          setPlayerCount(e.target.value);
-          playerNO(e.target.value, roomID.current);
+          const settings = { ...gameSettings, [type]: e.target.value };
+          setGameSettings(settings)
+          gameData(settings, roomID.current);
         }}
         style={{
           width: "30%",
           padding: "5px",
         }}
       >
-        {[2, 3, 4, 5].map((num) => <option key={num} value={num}>
+        {optionAttr.map((num) => <option key={num} value={num}>
           {num}
         </option>
         )}

@@ -58,7 +58,6 @@ export default function ({ setPlayers, roomID }) {
         }}
           onClick={() => {
             socket.off("players");
-            console.log(roomID);
             socket.emit("leave", roomID.current);
             socket.disconnect();
             setPlayers([]);

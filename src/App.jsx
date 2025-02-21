@@ -8,6 +8,10 @@ import Room from "./components/Room";
 import { socket } from "./socket";
 
 export default function () {
+  const [gameSettings, setGameSettings] = useState({
+    drawTime: 80,
+    roundCount: 3,
+  });
   const [isStarted, setIsStarted] = useState(false);
   const [canAccess, setCanAccess] = useState(false);
   const [players, setPlayers] = useState([]);
@@ -17,18 +21,15 @@ export default function () {
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    window.addEventListener("beforeunload", () => {
-      socket.emit("leave", roomID.current);
-    });
+    window.addEventListener("beforeunload", () => socket.emit("leave", roomID.current));
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    console.log(players);
     if (!isStarted && players.length && players[0].id == socket.id) {
       setCanAccess(true);
     }
     else if (isStarted) {
-      
+
     }
   }, [players, isStarted])
   return (
@@ -96,7 +97,12 @@ export default function () {
                   }}>
                 </div>
                 }
-                {isStarted ? <Canvas /> : <GameSettings />}
+                {isStarted ? <Canvas /> :
+                  <GameSettings
+                    gameSettings={gameSettings}
+                    setGameSettings={setGameSettings}
+                    roomID={roomID}
+                  />}
               </div>
               {width >= 800 ? (
                 <div
