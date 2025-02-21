@@ -117,7 +117,7 @@ export default function () {
                     backgroundColor: "white",
                   }}
                 >
-                  <ChatBox roomID={roomID} />
+                  <ChatBox roomID={roomID} players={players}/>
                 </div>
               ) : (
                 <div
@@ -141,7 +141,7 @@ export default function () {
                       height: "100%",
                     }}
                   >
-                    <ChatBox roomID={roomID} />
+                    <ChatBox roomID={roomID} players={players}/>
                   </div>
                 </div>
               )}

@@ -1,4 +1,5 @@
 export default function ({ idx, message }) {
+  const { name, text } = message;
   return (
     <div
       style={{
@@ -13,7 +14,13 @@ export default function ({ idx, message }) {
       }}
     >
       <div>
-        {message}
+        {name ? (
+          <>
+            <strong>{name}</strong>: {text}
+          </>
+        ) : (
+          text
+        )}
       </div>
     </div>
   )
