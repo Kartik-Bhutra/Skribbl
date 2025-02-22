@@ -1,6 +1,7 @@
-export default function () {
+export default function ({ setIsStarted }) {
   return (
     <button
+      onClick={() => setIsStarted(true)}
       style={{
         flex: "1",
         backgroundColor: "#4CAF50",

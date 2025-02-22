@@ -1,5 +1,5 @@
 import { socket } from "../socket";
-export default function ({ setPlayers, roomID }) {
+export default function ({ setPlayers, roomID, setIsPainter, setCanAccess, setIsStarted }) {
   return (
     <div
       style={{
@@ -60,6 +60,9 @@ export default function ({ setPlayers, roomID }) {
             socket.off("players");
             socket.emit("leave", roomID.current);
             socket.disconnect();
+            setCanAccess(false);
+            setIsPainter(false);
+            setIsStarted(false);
             setPlayers([]);
           }
           }

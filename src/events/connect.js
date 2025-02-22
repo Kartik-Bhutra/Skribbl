@@ -1,6 +1,6 @@
 import { socket } from "../socket";
 
-export default function (roomID, setPlayers, setGameSettings, setPlayerCount) {
+export default function (roomID, setPlayers, setGameSettings, setPlayerCount, setCanAccess) {
   socket.on("connect", () => {
     console.log("Socket Connected");
   })
@@ -18,6 +18,7 @@ export default function (roomID, setPlayers, setGameSettings, setPlayerCount) {
       score: 0,
       id: socket.id
     }]);
+    setCanAccess(true);
   });
   socket.on("joined", (players, roomid, playerCount, settings) => {
     roomID.current = roomid;

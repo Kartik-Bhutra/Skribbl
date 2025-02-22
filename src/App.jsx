@@ -6,6 +6,7 @@ import GameSettings from "./components/GameSettings";
 import Panel from "./components/Panel";
 import Room from "./components/Room";
 import { socket } from "./socket";
+import Block from "./components/containers/Block";
 
 export default function () {
   const [playerCount, setPlayerCount] = useState(7);
@@ -15,6 +16,7 @@ export default function () {
   });
   const [isStarted, setIsStarted] = useState(false);
   const [canAccess, setCanAccess] = useState(false);
+  const [isPainter, setIsPainter] = useState(false);
   const [players, setPlayers] = useState([]);
   const roomID = useRef("");
   const [width, setWidth] = useState(window.innerWidth);
@@ -25,13 +27,8 @@ export default function () {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (!isStarted && players.length && players[0].id == socket.id) {
-      setCanAccess(true);
-    }
-    else if (isStarted) {
-
-    }
-  }, [players, isStarted])
+    socket.on("admin", () => setCanAccess(true));
+  }, [])
   return (
     <>
       {players.length ? (
@@ -47,7 +44,13 @@ export default function () {
             display: "flex",
             justifyContent: "center",
           }}>
-            <Panel setPlayers={setPlayers} roomID={roomID} />
+            <Panel
+              setPlayers={setPlayers}
+              roomID={roomID}
+              setCanAccess={setCanAccess}
+              setIsPainter={setIsPainter}
+              setIsStarted={setIsStarted}
+            />
           </div>
           <div
             style={{
@@ -85,17 +88,9 @@ export default function () {
                   flexDirection: "column",
                   position: "relative",
                 }}
-              >{!canAccess &&
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    position: "absolute",
-                    zIndex: "100",
-                    backgroundColor: "black",
-                    opacity: "0.5",
-                  }}>
-                </div>
+              >{isStarted
+                ? !isPainter && <Block />
+                : !canAccess && <Block />
                 }
                 {isStarted ? <Canvas /> :
                   <GameSettings
@@ -105,6 +100,7 @@ export default function () {
                     startingIndex={players.length}
                     playerCount={playerCount}
                     setPlayerCount={setPlayerCount}
+                    setIsStarted={setIsStarted}
                   />}
               </div>
               {width >= 800 ? (
@@ -117,7 +113,7 @@ export default function () {
                     backgroundColor: "white",
                   }}
                 >
-                  <ChatBox roomID={roomID} players={players}/>
+                  <ChatBox roomID={roomID} players={players} />
                 </div>
               ) : (
                 <div
@@ -141,7 +137,7 @@ export default function () {
                       height: "100%",
                     }}
                   >
-                    <ChatBox roomID={roomID} players={players}/>
+                    <ChatBox roomID={roomID} players={players} />
                   </div>
                 </div>
               )}
@@ -154,6 +150,7 @@ export default function () {
           setPlayers={setPlayers}
           setGameSettings={setGameSettings}
           setPlayerCount={setPlayerCount}
+          setCanAccess={setCanAccess}
         />
       )}
     </>
