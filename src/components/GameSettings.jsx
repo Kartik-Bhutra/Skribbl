@@ -5,7 +5,7 @@ import Custom from "./inputs/Custom";
 import setting from "../events/setting";
 import offSetting from "../events/offSetting";
 import Setting from "./inputs/Setting";
-export default function ({ gameSettings, setGameSettings, roomID, startingIndex, playerCount, setPlayerCount, setIsStarted }) {
+export default function ({ gameSettings, setGameSettings, roomID, startingIndex, playerCount, setPlayerCount }) {
   const [useCustomWords, setUseCustomWords] = useState(false);
   const [customWords, setCustomWords] = useState("");
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function ({ gameSettings, setGameSettings, roomID, startingIndex,
           height: "10%",
         }}
       >
-        <Start setIsStarted={setIsStarted} />
+        <Start roomID={roomID}/>
       </div>
     </div>
   );

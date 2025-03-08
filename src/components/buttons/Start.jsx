@@ -1,7 +1,9 @@
-export default function ({ setIsStarted }) {
+import start from "../../events/start";
+
+export default function ({roomID}) {
   return (
     <button
-      onClick={() => setIsStarted(true)}
+      onClick={() => start(roomID.current)}
       style={{
         flex: "1",
         backgroundColor: "#4CAF50",

@@ -1,4 +1,5 @@
 import { socket } from "../socket";
+import Timer from "./containers/Timer";
 export default function ({ setPlayers, roomID, setIsPainter, setCanAccess, setIsStarted }) {
   return (
     <div
@@ -15,18 +16,7 @@ export default function ({ setPlayers, roomID, setIsPainter, setCanAccess, setIs
         width: "10%",
         height: "100%",
       }}>
-        <div style={{
-          backgroundImage: `url("/clock.gif")`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          00:00
-        </div>
+        <Timer />
         <div style={{
           width: "100%",
           height: "100%",

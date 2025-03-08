@@ -28,6 +28,7 @@ export default function () {
   }, []);
   useEffect(() => {
     socket.on("admin", () => setCanAccess(true));
+    socket.on("started", () => setIsStarted(true));
   }, [])
   return (
     <>
